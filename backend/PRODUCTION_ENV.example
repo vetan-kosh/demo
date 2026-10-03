@@ -1,0 +1,39 @@
+APP_ENV=production
+DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:5432/koshtax
+SITE_URL=https://your-domain.example
+ADMIN_USERNAME=change-me
+ADMIN_PASSWORD=use-a-long-random-secret
+ADMIN_SESSION_SECRET=use-a-separate-long-random-secret
+ADMIN_EMAIL=admin@example.com
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=mailer@example.com
+SMTP_PASSWORD=provider-app-password
+SMTP_FROM_NAME=VetanKosh
+FORM16_ARCHIVE_DIR=/opt/vetankosh/private_form16_archive
+RAZORPAY_ENABLED=false
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
+REMINDER_CRON_SECRET=use-a-long-random-secret
+
+# Low-resource durable worker
+JOB_POLL_SECONDS=2
+JOB_LEASE_SECONDS=900
+# Start ONE worker on Oracle Free Tier: python worker.py
+
+# OCI private off-VM backups
+OCI_BACKUP_BUCKET=vetankosh-backups
+OCI_NAMESPACE=
+OCI_CONFIG_FILE=/opt/vetankosh/.oci/config
+OCI_CONFIG_PROFILE=DEFAULT
+OCI_BACKUP_PREFIX=vetankosh
+
+SUPPORT_EMAIL=support@your-domain.example
+
+# Separate HMAC secret for payment-status/download bearer links (32+ random bytes).
+PAYMENT_ACCESS_SECRET=generate-a-separate-long-random-secret
+
+# Security/privacy operations
+# Use long independent random secrets; never commit real values.
+# ADMIN_SESSION_SECRET and PAYMENT_ACCESS_SECRET must NOT be the same.
