@@ -1,0 +1,991 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <div>
+            <h2 class="text-xl font-semibold text-slate-800">Salary Slip Review</h2>
+            <p class="text-sm text-slate-500 mt-1">
+                Review the extracted salary data before continuing to DDO details.
+            </p>
+        </div>
+        <div class="text-right">
+            <p class="text-sm text-slate-500 uppercase tracking-wide">Employee PAN</p>
+            <p class="font-semibold text-slate-800 font-mono" id="emp_pan_header">Loading...</p>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4">
+            Employee Personal Details
+        </h3>
+
+        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Employee Name</label>
+                    <input type="text" id="emp_name" readonly
+                        class="w-full bg-slate-200 border-slate-300 text-slate-700 rounded-md px-3 py-2 text-sm cursor-not-allowed font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">PAN Number</label>
+                    <input type="text" id="emp_pan_input" readonly
+                        class="w-full bg-slate-200 border-slate-300 text-slate-700 rounded-md px-3 py-2 text-sm font-mono cursor-not-allowed font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">GPF / PRAN Number</label>
+                    <input type="text" id="emp_gpf" readonly
+                        class="w-full bg-slate-200 border-slate-300 text-slate-700 rounded-md px-3 py-2 text-sm font-mono cursor-not-allowed font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Designation</label>
+                    <input type="text" id="emp_desig" readonly
+                        class="w-full bg-slate-200 border-slate-300 text-slate-700 rounded-md px-3 py-2 text-sm cursor-not-allowed font-medium">
+                </div>
+
+                <div class="md:col-span-2"><hr class="border-slate-200 my-2"></div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1 uppercase tracking-wide">
+                        Office / School Name &amp; Address <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="emp_office" autocomplete="organization"
+                        placeholder="e.g., Utkramit +2 High School, Tubil, Arki"
+                        class="w-full bg-white border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-prashasan-base focus:border-prashasan-base outline-none transition-shadow">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1 uppercase tracking-wide">
+                        Mobile Number <span class="text-red-500">*</span>
+                    </label>
+                    <input type="tel" id="emp_mobile" inputmode="numeric" autocomplete="tel"
+                        maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number"
+                        class="w-full bg-white border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-prashasan-base focus:border-prashasan-base outline-none transition-shadow">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1 uppercase tracking-wide">
+                        Email ID <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email" id="emp_email" autocomplete="email" placeholder="employee@example.com"
+                        class="w-full bg-white border border-slate-300 text-slate-800 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-prashasan-base focus:border-prashasan-base outline-none transition-shadow">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="flex items-start gap-3 text-sm text-slate-600 cursor-pointer">
+                        <input type="checkbox" id="email_contact_consent"
+                            class="mt-1 h-4 w-4 rounded border-slate-300 text-prashasan-base focus:ring-prashasan-base">
+                        <span>
+                            I agree to receive service emails about this Form 16 application,
+                            including an incomplete-application reminder. Payment confirmation
+                            and Form 16 delivery emails are part of the requested service.
+                        </span>
+                    </label>
+
+                    <p id="autosave_status" class="text-xs text-slate-500 mt-2" aria-live="polite">
+                        Progress is saved automatically when valid details are entered.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4">Latest Month Check</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="border border-slate-300 rounded-lg overflow-hidden">
+                <div class="bg-slate-500 text-white px-4 py-2 font-medium text-sm flex justify-between items-center">
+                    <span>Original Data (OCR Extracted)</span>
+                    <span class="bg-slate-600 px-2 py-0.5 rounded text-xs" id="bill_type">Loading...</span>
+                </div>
+                <div class="p-4 bg-slate-50">
+                    <p class="text-slate-500 text-sm mb-1" id="orig_period">Basic Pay</p>
+                    <p class="text-3xl font-bold font-mono text-slate-800" id="orig_basic">₹ 0.00</p>
+                    <ul class="mt-4 space-y-2 text-sm text-slate-600 font-mono">
+                        <li class="flex justify-between"><span>DA</span><span id="orig_da">₹ 0.00</span></li>
+                        <li class="flex justify-between"><span>HRA</span><span id="orig_hra">₹ 0.00</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border border-prashasan-base rounded-lg overflow-hidden shadow-sm">
+                <div class="bg-prashasan-base text-white px-4 py-2 font-medium text-sm flex justify-between items-center">
+                    <span>Ledger Storage Treatment</span>
+                    <span class="bg-prashasan-dark px-2 py-0.5 rounded text-xs" id="matrix_status">Level Check</span>
+                </div>
+                <div class="p-4 bg-prashasan-light">
+                    <p class="text-prashasan-dark text-sm mb-1">Basic Pay Stored</p>
+                    <p class="text-3xl font-bold font-mono text-prashasan-dark" id="corr_basic">₹ 0.00</p>
+                    <ul class="mt-4 space-y-2 text-sm text-prashasan-dark font-mono">
+                        <li class="flex justify-between"><span>DA Stored</span><span id="corr_da">₹ 0.00</span></li>
+                        <li class="flex justify-between items-center">
+                            <span>HRA</span>
+                            <span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded border border-amber-200 font-sans">
+                                Preserved as extracted
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="clerk_increment_section" class="hidden mb-8 rounded-xl border border-amber-300 bg-amber-50 p-5">
+            <h3 class="text-sm font-semibold text-amber-900 uppercase tracking-wide">Clerk Annual Increment Confirmation</h3>
+            <p id="clerk_increment_message" class="mt-2 text-sm text-amber-900"></p>
+            <div class="mt-4 flex flex-wrap gap-4">
+                <label class="flex items-center gap-2 text-sm font-medium text-slate-800">
+                    <input type="radio" name="clerk_increment_choice" value="yes" class="h-4 w-4"> Yes, increment applicable
+                </label>
+                <label class="flex items-center gap-2 text-sm font-medium text-slate-800">
+                    <input type="radio" name="clerk_increment_choice" value="no" class="h-4 w-4"> No, keep current basic
+                </label>
+            </div>
+            <p class="mt-3 text-xs text-amber-800">This answer is used only for the January auto-projection. An actual January salary slip always overrides the projection.</p>
+        </div>
+
+        <div class="mt-8 flex justify-between items-end mb-4">
+            <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Extracted Ledger Data</h3>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-600 text-xs uppercase tracking-wider">
+                        <th class="p-3 border-b border-slate-200">Period</th>
+                        <th class="p-3 border-b border-slate-200 text-right">Basic Pay</th>
+                        <th class="p-3 border-b border-slate-200 text-right">DA</th>
+                        <th class="p-3 border-b border-slate-200 text-right">Gross Pay</th>
+                        <th class="p-3 border-b border-slate-200 text-right">Net Pay</th>
+                        <th class="p-3 border-b border-slate-200">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="font-mono text-sm text-slate-700" id="ledger_tbody"></tbody>
+            </table>
+        </div>
+
+        <div id="ledger_notice" class="hidden mt-4 rounded-lg border px-4 py-3 text-sm"
+            role="status" aria-live="polite"></div>
+
+        <!-- Arrear allocation UI: only appears when at least one arrear slip exists. -->
+        <div id="arrear_section" class="hidden mt-6 rounded-xl border border-amber-200 bg-amber-50 p-5">
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-amber-900 uppercase tracking-wide">
+                    Arrear Payment / Disbursement Details
+                </h3>
+                <p class="text-sm text-amber-800 mt-1">
+                    For each arrear bill, enter the month and year in which that arrear was actually paid/disbursed.
+                    The old salary period shown on the bill will be preserved, but it will not decide the Form 16 year.
+                </p>
+            </div>
+            <div id="arrear_inputs" class="space-y-4"></div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center gap-4">
+            <button type="button" onclick="window.location.href='/'"
+                class="text-slate-500 font-medium hover:text-slate-800 transition-colors">
+                &larr; Back to Upload
+            </button>
+
+            <button type="button" id="continue_button" onclick="proceedToNextStep()" class="btn">
+                Confirm &amp; Enter DDO Details
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const userId = {{ user_id | tojson }};
+    const fmt = (num) => new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR'
+    }).format(Number(num) || 0);
+
+    let extractedSlips = [];
+    let autosaveTimer = null;
+    let autosaveInFlight = false;
+    const clerkConfirmBasics = new Set([19900, 21700, 25500, 29200]);
+    const clerkAutoBasics = new Set([20500, 22400, 26300, 30100]);
+    let clerkIncrementRule = {mode: 'none', basic: 0};
+
+    function latestRegularSlip(slips) {
+        const candidates = (Array.isArray(slips) ? slips : []).filter((slip) => {
+            if (isArrearSlip(slip)) return false;
+            const months = getPeriodMonths(slip);
+            return months.length === 1 && Number(slip?.line_items?.basic_pay) > 0;
+        });
+        candidates.sort((a, b) => {
+            const am = getPeriodMonths(a)[0] || [0, 0];
+            const bm = getPeriodMonths(b)[0] || [0, 0];
+            return (am[1] * 12 + am[0]) - (bm[1] * 12 + bm[0]);
+        });
+        return candidates[candidates.length - 1] || null;
+    }
+
+    function configureClerkIncrementRule(slips) {
+        const section = getElement('clerk_increment_section');
+        const message = getElement('clerk_increment_message');
+        section.classList.add('hidden');
+        clerkIncrementRule = {mode: 'none', basic: 0};
+
+        const main = slips?.[0] || {};
+        const designation = String(main.designation || '').trim().toLowerCase();
+        if (!designation.includes('clerk')) return;
+
+        const latest = latestRegularSlip(slips);
+        const basic = Math.round(Number(latest?.line_items?.basic_pay) || 0);
+        clerkIncrementRule.basic = basic;
+
+        if (clerkConfirmBasics.has(basic)) {
+            clerkIncrementRule.mode = 'confirm';
+            message.textContent = `Clerk ka latest Basic Pay ${fmt(basic)} hai. Kya annual increment applicable hai?`;
+            section.classList.remove('hidden');
+        } else if (clerkAutoBasics.has(basic)) {
+            clerkIncrementRule.mode = 'auto';
+        }
+    }
+
+    function clerkIncrementChoice() {
+        if (clerkIncrementRule.mode === 'auto') return 'auto';
+        if (clerkIncrementRule.mode !== 'confirm') return null;
+        const selected = document.querySelector('input[name="clerk_increment_choice"]:checked');
+        return selected ? selected.value : null;
+    }
+
+    function getElement(id) {
+        return document.getElementById(id);
+    }
+
+    function getManualDetails() {
+        return {
+            office: getElement('emp_office').value.trim(),
+            mobile: getElement('emp_mobile').value.replace(/\D/g, '').slice(0, 10),
+            email: getElement('emp_email').value.trim().toLowerCase(),
+            emailContactConsent: getElement('email_contact_consent').checked
+        };
+    }
+
+    function validMobile(mobile) {
+        return /^[6-9]\d{9}$/.test(mobile);
+    }
+
+    function validEmail(email) {
+        if (!email) return false;
+        const input = getElement('emp_email');
+        input.value = email;
+        return input.checkValidity();
+    }
+
+    function setAutosaveStatus(message, isError = false) {
+        const status = getElement('autosave_status');
+        status.textContent = message;
+        status.classList.toggle('text-red-600', isError);
+        status.classList.toggle('text-slate-500', !isError);
+    }
+
+    function restoreManualDetails() {
+        const raw = sessionStorage.getItem('manualPersonalDetails');
+        if (!raw) return;
+
+        try {
+            const saved = JSON.parse(raw);
+            if (saved.office) getElement('emp_office').value = saved.office;
+            if (saved.mobile) {
+                getElement('emp_mobile').value = String(saved.mobile).replace(/\D/g, '').slice(0, 10);
+            }
+            if (saved.email) getElement('emp_email').value = String(saved.email).trim();
+            if (saved.emailContactConsent === true) getElement('email_contact_consent').checked = true;
+        } catch (error) {
+            console.warn('Could not restore manual details:', error);
+        }
+    }
+
+    function saveManualDetailsLocally() {
+        sessionStorage.setItem('manualPersonalDetails', JSON.stringify(getManualDetails()));
+    }
+
+    function getSnapshot() {
+        return {
+            name: getElement('emp_name').value.trim(),
+            pan: getElement('emp_pan_input').value.trim(),
+            office_school_name: getElement('emp_office').value.trim()
+        };
+    }
+
+    async function saveProgress({ finalStep = false, keepalive = false } = {}) {
+        if (!userId || autosaveInFlight) return;
+
+        const details = getManualDetails();
+        const payload = {
+            user_id: userId,
+            page_name: 'review',
+            step_name: finalStep ? 'contact_saved' : 'personal_details',
+            last_completed_step: finalStep ? 'review' : null,
+            progress_percent: finalStep ? 45 : 40,
+            email: validEmail(details.email) ? details.email : null,
+            mobile: validMobile(details.mobile) ? details.mobile : null,
+            email_contact_consent: Boolean(details.emailContactConsent && validEmail(details.email)),
+            snapshot: getSnapshot()
+        };
+
+        autosaveInFlight = true;
+
+        try {
+            const response = await fetch('/api/progress', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload),
+                keepalive
+            });
+
+            if (!response.ok) {
+                let message = 'Progress could not be saved.';
+                try {
+                    const result = await response.json();
+                    message = result.detail || message;
+                } catch (_) {}
+                throw new Error(message);
+            }
+
+            setAutosaveStatus('Progress saved.');
+        } catch (error) {
+            console.warn('Progress autosave failed:', error);
+            setAutosaveStatus(
+                'Progress is saved locally; server autosave will retry when you edit again.',
+                true
+            );
+        } finally {
+            autosaveInFlight = false;
+        }
+    }
+
+    function scheduleAutosave() {
+        saveManualDetailsLocally();
+        setAutosaveStatus('Saving progress...');
+        if (autosaveTimer) clearTimeout(autosaveTimer);
+        autosaveTimer = setTimeout(() => saveProgress(), 700);
+    }
+
+    function createCell(text, className = '') {
+        const td = document.createElement('td');
+        td.className = className;
+        td.textContent = text;
+        return td;
+    }
+
+    function isArrearSlip(slip) {
+        const period = slip && slip.period ? slip.period : {};
+        return Boolean((slip && slip.source === 'arrear') || period.is_arrear === true);
+    }
+
+    function getPeriodMonths(slip) {
+        const period = slip && slip.period ? slip.period : {};
+        const rawMonths = Array.isArray(period.months) ? period.months : [];
+
+        return rawMonths.map((item) => {
+            if (!Array.isArray(item) || item.length < 2) return null;
+
+            const month = Number(item[0]);
+            const year = Number(item[1]);
+
+            if (!Number.isInteger(month) || month < 1 || month > 12) return null;
+            if (!Number.isInteger(year) || year < 1900 || year > 2200) return null;
+
+            return [month, year];
+        }).filter(Boolean);
+    }
+
+    function safeNumericObject(value) {
+        const source = value && typeof value === 'object' ? value : {};
+        const result = {};
+
+        Object.entries(source).forEach(([key, rawValue]) => {
+            const number = Number(rawValue);
+            if (Number.isFinite(number)) result[key] = number;
+        });
+
+        return result;
+    }
+
+    function arrearSlips() {
+        return extractedSlips
+            .map((slip, index) => ({slip, index}))
+            .filter((item) => isArrearSlip(item.slip));
+    }
+
+    function arrearStorageKey(index) {
+        return `arrearPayment:${userId}:${index}`;
+    }
+
+    function renderArrearInputs(slips) {
+        const items = slips
+            .map((slip, index) => ({slip, index}))
+            .filter((item) => isArrearSlip(item.slip));
+
+        const section = getElement('arrear_section');
+        const container = getElement('arrear_inputs');
+        container.innerHTML = '';
+
+        if (items.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+
+        items.forEach(({slip, index}) => {
+            const period = slip.period || {};
+            const wrapper = document.createElement('div');
+            wrapper.className = 'rounded-lg border border-amber-200 bg-white p-4';
+
+            const title = document.createElement('div');
+            title.className = 'font-semibold text-slate-800 text-sm';
+            title.textContent = period.raw || `Arrear bill ${index + 1}`;
+
+            const amount = document.createElement('div');
+            amount.className = 'text-xs text-slate-500 mt-1 mb-3';
+            amount.textContent = `Extracted arrear gross: ${fmt(slip.gross_salary)}${slip.bill_no ? ` • Bill No. ${slip.bill_no}` : ''}`;
+
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+
+            const monthWrap = document.createElement('div');
+            const monthLabel = document.createElement('label');
+            monthLabel.className = 'block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide';
+            monthLabel.textContent = 'Actually Paid Month *';
+
+            const monthSelect = document.createElement('select');
+            monthSelect.id = `arrear_payment_month_${index}`;
+            monthSelect.className = 'w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm';
+            monthSelect.innerHTML = `
+                <option value="">Select month</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            `;
+
+            const yearWrap = document.createElement('div');
+            const yearLabel = document.createElement('label');
+            yearLabel.className = 'block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide';
+            yearLabel.textContent = 'Actually Paid Year *';
+
+            const yearInput = document.createElement('input');
+            yearInput.type = 'number';
+            yearInput.id = `arrear_payment_year_${index}`;
+            yearInput.min = '1900';
+            yearInput.max = '2200';
+            yearInput.inputMode = 'numeric';
+            yearInput.placeholder = 'e.g., 2025';
+            yearInput.className = 'w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm';
+
+            monthWrap.appendChild(monthLabel);
+            monthWrap.appendChild(monthSelect);
+            yearWrap.appendChild(yearLabel);
+            yearWrap.appendChild(yearInput);
+            grid.appendChild(monthWrap);
+            grid.appendChild(yearWrap);
+
+            wrapper.appendChild(title);
+            wrapper.appendChild(amount);
+            wrapper.appendChild(grid);
+            container.appendChild(wrapper);
+
+            try {
+                const saved = JSON.parse(sessionStorage.getItem(arrearStorageKey(index)) || '{}');
+                if (saved.paymentMonth) monthSelect.value = String(saved.paymentMonth);
+                if (saved.paymentYear) yearInput.value = String(saved.paymentYear);
+            } catch (_) {}
+
+            const persist = () => {
+                sessionStorage.setItem(arrearStorageKey(index), JSON.stringify({
+                    paymentMonth: Number(monthSelect.value) || null,
+                    paymentYear: Number(yearInput.value) || null
+                }));
+            };
+
+            monthSelect.addEventListener('change', persist);
+            yearInput.addEventListener('input', persist);
+        });
+    }
+
+    function readArrearAllocation(index) {
+        const monthElement = getElement(`arrear_payment_month_${index}`);
+        const yearElement = getElement(`arrear_payment_year_${index}`);
+
+        const paymentMonth = monthElement ? Number(monthElement.value) : 0;
+        const paymentYear = yearElement ? Number(yearElement.value) : 0;
+
+        if (!Number.isInteger(paymentMonth) || paymentMonth < 1 || paymentMonth > 12) {
+            throw new Error('Please select the month in which the arrear was actually paid/disbursed.');
+        }
+
+        if (!Number.isInteger(paymentYear) || paymentYear < 1900 || paymentYear > 2200) {
+            throw new Error('Please enter the valid year in which the arrear was actually paid/disbursed.');
+        }
+
+        return {paymentMonth, paymentYear};
+    }
+
+    function buildRegularLedgerPayload(slip) {
+        const period = slip && slip.period ? slip.period : {};
+        const months = getPeriodMonths(slip);
+        const lineItems = safeNumericObject(slip && slip.line_items);
+        const deductions = safeNumericObject(slip && slip.deductions);
+        const warnings = Array.isArray(slip && slip.warnings)
+            ? slip.warnings.map((item) => String(item))
+            : [];
+
+        if (isArrearSlip(slip)) {
+            throw new Error('Internal review error: arrear was sent to the regular salary endpoint.');
+        }
+
+        if (months.length === 0) {
+            throw new Error(
+                `Salary period could not be resolved for ${period.raw || 'one extracted slip'}. ` +
+                'Please upload a slip with a clear month/year.'
+            );
+        }
+
+        const isCombined = Boolean(period.is_combined) || months.length > 1;
+        const [month, year] = isCombined ? months[months.length - 1] : months[0];
+
+        const flags = [...warnings];
+        const designation = String((extractedSlips?.[0] || {}).designation || '').trim();
+        if (designation) flags.push(`employee_designation:${designation}`);
+        const incrementChoice = clerkIncrementChoice();
+        if (incrementChoice) flags.push(`clerk_increment_choice:${incrementChoice}`);
+        let note = null;
+
+        if (isCombined) {
+            flags.push(
+                'Combined-period bill preserved as one lump-sum ledger entry; monthly component split was not assumed.'
+            );
+            note = (
+                `Combined salary bill for ${period.raw || 'multiple months'} ` +
+                'preserved at the period-end month without blindly dividing Basic/DA/HRA.'
+            );
+        }
+
+        return {
+            user_id: userId,
+            month,
+            year,
+            basic_pay: Number(lineItems.basic_pay) || 0,
+            da: Number(lineItems.da) || 0,
+            hra: Number(lineItems.hra) || 0,
+            gross_salary: Number(slip && slip.gross_salary) || 0,
+            source: isCombined ? 'combined_period' : 'extracted',
+            line_items: lineItems,
+            deductions,
+            note,
+            flags
+        };
+    }
+
+    function buildArrearPayload(slip, index) {
+        const period = slip && slip.period ? slip.period : {};
+        const allocation = readArrearAllocation(index);
+        const warnings = Array.isArray(slip && slip.warnings)
+            ? slip.warnings.map((item) => String(item))
+            : [];
+
+        return {
+            user_id: userId,
+            payment_month: allocation.paymentMonth,
+            payment_year: allocation.paymentYear,
+            original_period: String(period.raw || 'Unknown arrear period'),
+            gross_salary: Number(slip && slip.gross_salary) || 0,
+            line_items: safeNumericObject(slip && slip.line_items),
+            deductions: safeNumericObject(slip && slip.deductions),
+            bill_no: slip && slip.bill_no ? String(slip.bill_no) : null,
+            note: 'Payment/disbursement month and year confirmed on Salary Slip Review.',
+            flags: warnings
+        };
+    }
+
+    async function postLedger(url, payload, fallbackMessage) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        let result = {};
+        try {
+            result = await response.json();
+        } catch (_) {}
+
+        if (!response.ok) {
+            const detail = String(result.detail || fallbackMessage);
+
+            // Regular ledger retries can encounter an existing actual row.
+            // Arrear endpoint is itself idempotent and returns success for a saved fingerprint.
+            if (
+                url === '/api/ledger/save' &&
+                response.status === 400 &&
+                detail.toLowerCase().includes('already exists')
+            ) {
+                return {already_saved: true};
+            }
+
+            throw new Error(detail);
+        }
+
+        return result;
+    }
+
+    async function saveLedgerEntries() {
+        if (!Array.isArray(extractedSlips) || extractedSlips.length === 0) {
+            throw new Error('No extracted salary data is available to save.');
+        }
+
+        // Validate ALL payloads before the first POST, so missing arrear payment
+        // details cannot leave a half-saved application.
+        const jobs = extractedSlips.map((slip, index) => {
+            if (isArrearSlip(slip)) {
+                return {
+                    url: '/api/ledger/save-arrear',
+                    payload: buildArrearPayload(slip, index),
+                    fallback: 'Arrear could not be saved.'
+                };
+            }
+
+            return {
+                url: '/api/ledger/save',
+                payload: buildRegularLedgerPayload(slip),
+                fallback: 'Salary ledger could not be saved.'
+            };
+        });
+
+        // Sequential writes are intentional: salary + arrear may target the same
+        // payment month, and the backend safely merges them into one monthly row.
+        for (const job of jobs) {
+            await postLedger(job.url, job.payload, job.fallback);
+        }
+
+        sessionStorage.setItem(`salaryLedgerSaved:${userId}`, new Date().toISOString());
+    }
+
+    function updateLedgerNotice(slips) {
+        const notice = getElement('ledger_notice');
+        if (!notice) return;
+
+        const hasArrear = slips.some(isArrearSlip);
+        const hasCombined = slips.some((slip) => {
+            const period = slip && slip.period ? slip.period : {};
+            return !isArrearSlip(slip) && (
+                period.is_combined === true ||
+                getPeriodMonths(slip).length > 1
+            );
+        });
+
+        notice.classList.remove(
+            'hidden',
+            'bg-red-50', 'border-red-200', 'text-red-700',
+            'bg-amber-50', 'border-amber-200', 'text-amber-800',
+            'bg-blue-50', 'border-blue-200', 'text-blue-700',
+            'bg-emerald-50', 'border-emerald-200', 'text-emerald-700'
+        );
+
+        if (hasArrear) {
+            notice.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-800');
+            notice.textContent =
+                'Arrear detected. Confirm its actual payment/disbursement month and year below. ' +
+                'The original arrear period will be preserved and the backend will allocate the income to the FY in which it was actually paid.';
+            return;
+        }
+
+        if (hasCombined) {
+            notice.classList.add('bg-blue-50', 'border-blue-200', 'text-blue-700');
+            notice.textContent =
+                'Combined salary bill detected. The full extracted amount will be preserved once as a lump-sum ' +
+                'ledger entry at the period-end month; components will not be blindly divided across months.';
+            return;
+        }
+
+        notice.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-700');
+        notice.textContent = 'Salary periods are ready to be stored in the database when you continue.';
+    }
+
+    function renderLedger(slips) {
+        const tbody = getElement('ledger_tbody');
+        tbody.innerHTML = '';
+
+        slips.forEach((slip) => {
+            const lineItems = slip && slip.line_items ? slip.line_items : {};
+            const period = slip && slip.period ? slip.period : {};
+            const warnings = Array.isArray(slip && slip.warnings) ? slip.warnings : [];
+            const months = getPeriodMonths(slip);
+            const arrear = isArrearSlip(slip);
+            const combined = !arrear && (
+                period.is_combined === true ||
+                months.length > 1
+            );
+
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-100 hover:bg-slate-50';
+
+            tr.appendChild(createCell(period.raw || 'Unknown', 'p-3 font-sans font-medium text-slate-800'));
+            tr.appendChild(createCell(fmt(lineItems.basic_pay), 'p-3 text-right'));
+            tr.appendChild(createCell(fmt(lineItems.da), 'p-3 text-right'));
+            tr.appendChild(createCell(fmt(slip && slip.gross_salary), 'p-3 text-right font-semibold'));
+            tr.appendChild(createCell(fmt(slip && slip.net_pay), 'p-3 text-right'));
+
+            const statusCell = document.createElement('td');
+            statusCell.className = 'p-3';
+            const badge = document.createElement('span');
+
+            if (arrear) {
+                badge.className = 'bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-sans cursor-help';
+                badge.textContent = 'Arrear – Payment FY';
+                badge.title = warnings.join(' | ') || 'Confirm the actual payment/disbursement month and year below.';
+            } else if (combined) {
+                badge.className = 'bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-sans cursor-help';
+                badge.textContent = 'Combined – Lump Sum';
+                badge.title = warnings.join(' | ') || 'Preserved once at the period-end month; not blindly divided.';
+            } else if (warnings.length > 0) {
+                badge.className = 'bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full font-sans cursor-help';
+                badge.textContent = '⚠ Review Needed';
+                badge.title = warnings.join(' | ');
+            } else {
+                badge.className = 'bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full font-sans';
+                badge.textContent = '✓ Ready';
+            }
+
+            statusCell.appendChild(badge);
+            tr.appendChild(statusCell);
+            tbody.appendChild(tr);
+        });
+
+        updateLedgerNotice(slips);
+        renderArrearInputs(slips);
+    }
+
+    function populateExtractedData(slips) {
+        if (!Array.isArray(slips) || slips.length === 0) return;
+
+        const mainSlip = slips[0] || {};
+        const period = mainSlip.period || {};
+        const lineItems = mainSlip.line_items || {};
+
+        getElement('emp_name').value = mainSlip.employee_name || 'N/A';
+        getElement('emp_pan_input').value = mainSlip.pan_no || 'N/A';
+        getElement('emp_gpf').value = mainSlip.gpf_no || 'N/A';
+        getElement('emp_desig').value = mainSlip.designation || 'N/A';
+        getElement('emp_pan_header').textContent = mainSlip.pan_no || 'N/A';
+
+        const periodLabel = period.raw || 'Unknown Period';
+        getElement('orig_period').textContent = `Basic Pay (${periodLabel})`;
+
+        const arrear = isArrearSlip(mainSlip);
+        const months = getPeriodMonths(mainSlip);
+        const isCombined = !arrear && (
+            period.is_combined === true ||
+            months.length > 1
+        );
+
+        getElement('bill_type').textContent = arrear
+            ? 'Arrear Bill'
+            : (isCombined ? 'Combined Bill' : 'Single Month');
+
+        const origBasic = Number(lineItems.basic_pay) || 0;
+        const origDa = Number(lineItems.da) || 0;
+        const origHra = Number(lineItems.hra) || 0;
+
+        getElement('orig_basic').textContent = fmt(origBasic);
+        getElement('orig_da').textContent = fmt(origDa);
+        getElement('orig_hra').textContent = fmt(origHra);
+
+        getElement('corr_basic').textContent = fmt(origBasic);
+        getElement('corr_da').textContent = fmt(origDa);
+
+        const hasWarnings = Array.isArray(mainSlip.warnings) && mainSlip.warnings.length > 0;
+
+        getElement('matrix_status').textContent = arrear
+            ? 'Payment FY'
+            : (isCombined ? 'Lump Sum' : (hasWarnings ? 'Review Needed' : 'Ready'));
+
+        renderLedger(slips);
+        configureClerkIncrementRule(slips);
+    }
+
+    function updateStepper() {
+        const steps = document.querySelectorAll('.rounded-full');
+        if (steps.length < 2) return;
+
+        steps[0].classList.replace('bg-prashasan-base', 'bg-emerald-500');
+        steps[0].innerHTML = '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+
+        steps[1].classList.replace('bg-slate-200', 'bg-prashasan-base');
+        steps[1].classList.replace('text-slate-500', 'text-white');
+
+        if (steps[1].nextElementSibling) {
+            steps[1].nextElementSibling.classList.replace('text-slate-500', 'text-prashasan-base');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateStepper();
+        restoreManualDetails();
+
+        const rawData = sessionStorage.getItem('extractedSlips');
+
+        if (!rawData) {
+            getElement('ledger_tbody').innerHTML =
+                '<tr><td colspan="6" class="p-4 text-center text-red-500">No data found. Please upload a file again.</td></tr>';
+        } else {
+            try {
+                extractedSlips = JSON.parse(rawData);
+
+                if (!Array.isArray(extractedSlips) || extractedSlips.length === 0) {
+                    throw new Error('No salary slips found.');
+                }
+
+                populateExtractedData(extractedSlips);
+            } catch (error) {
+                console.error('Could not load extracted salary data:', error);
+                getElement('ledger_tbody').innerHTML =
+                    '<tr><td colspan="6" class="p-4 text-center text-red-500">Salary data could not be loaded. Please upload the file again.</td></tr>';
+            }
+        }
+
+        ['emp_office', 'emp_mobile', 'emp_email'].forEach((id) => {
+            getElement(id).addEventListener('input', scheduleAutosave);
+            getElement(id).addEventListener('blur', () => {
+                saveManualDetailsLocally();
+                saveProgress();
+            });
+        });
+
+        getElement('email_contact_consent').addEventListener('change', () => {
+            saveManualDetailsLocally();
+            saveProgress();
+        });
+
+        saveProgress();
+    });
+
+    window.addEventListener('pagehide', () => {
+        saveManualDetailsLocally();
+        if (autosaveTimer) clearTimeout(autosaveTimer);
+        saveProgress({keepalive: true});
+    });
+
+    async function proceedToNextStep() {
+        const office = getElement('emp_office').value.trim();
+        const mobile = getElement('emp_mobile').value.replace(/\D/g, '').slice(0, 10);
+        const email = getElement('emp_email').value.trim().toLowerCase();
+        const name = getElement('emp_name').value.trim();
+        const pan = getElement('emp_pan_input').value.trim().toUpperCase();
+        const consent = getElement('email_contact_consent').checked;
+        const continueButton = getElement('continue_button');
+
+        if (!office || !mobile || !email) {
+            alert('Please fill in the required fields: Office / School Name & Address, Mobile Number, and Email ID.');
+            return;
+        }
+
+        if (!validMobile(mobile)) {
+            alert('Please enter a valid 10-digit Indian mobile number.');
+            getElement('emp_mobile').focus();
+            return;
+        }
+
+        if (!validEmail(email)) {
+            alert('Please enter a valid email address.');
+            getElement('emp_email').focus();
+            return;
+        }
+
+        if (!name || name === 'N/A' || !pan || pan === 'N/A') {
+            alert('Employee Name or PAN could not be extracted. Please upload a valid salary slip.');
+            return;
+        }
+
+        if (!userId) {
+            alert('User ID is missing. Please upload the salary slip again.');
+            return;
+        }
+
+        if (!Array.isArray(extractedSlips) || extractedSlips.length === 0) {
+            alert('Salary data is missing. Please upload the salary slip again.');
+            return;
+        }
+
+        if (clerkIncrementRule.mode === 'confirm' && !clerkIncrementChoice()) {
+            alert('Please confirm whether the annual increment is applicable for this Clerk basic pay.');
+            getElement('clerk_increment_section').scrollIntoView({behavior: 'smooth', block: 'center'});
+            return;
+        }
+
+        // Validate every arrear allocation before saving employee or ledger data.
+        try {
+            arrearSlips().forEach(({index}) => readArrearAllocation(index));
+        } catch (error) {
+            alert(error.message);
+            return;
+        }
+
+        saveManualDetailsLocally();
+        continueButton.disabled = true;
+        continueButton.textContent = 'Saving employee...';
+
+        try {
+            await saveProgress({finalStep: true});
+
+            const response = await fetch('/api/employee', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: userId,
+                    name,
+                    pan,
+                    office_school_name: office,
+                    tan_id: null,
+                    email,
+                    mobile,
+                    email_contact_consent: consent
+                })
+            });
+
+            let result = {};
+            try {
+                result = await response.json();
+            } catch (_) {}
+
+            if (!response.ok) {
+                throw new Error(result.detail || 'Employee details could not be saved.');
+            }
+
+            continueButton.textContent = 'Saving salary & arrear ledger...';
+            await saveLedgerEntries();
+
+            sessionStorage.setItem('manualPersonalDetails', JSON.stringify({
+                office,
+                mobile,
+                email,
+                emailContactConsent: consent
+            }));
+
+            // Privacy: extracted salary payload is no longer needed in browser storage.
+            sessionStorage.removeItem('extractedSlips');
+            window.location.href = `/ddo-details?user_id=${encodeURIComponent(userId)}`;
+        } catch (error) {
+            console.error('Review save failed:', error);
+            alert('Could not save the application: ' + error.message);
+            continueButton.disabled = false;
+            continueButton.textContent = 'Confirm & Enter DDO Details';
+        }
+    }
+</script>
+{% endblock %}

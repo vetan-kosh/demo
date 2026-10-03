@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prashasan Admin | Form 16</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        prashasan: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        [data-admin-panel] { display: none; }
+        [data-admin-panel].is-active { display: block; }
+        .admin-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .admin-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+        .admin-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    </style>
+<script id="KOSH_CSRF_FETCH_PATCH">
+(()=>{const nativeFetch=window.fetch.bind(window);const csrf=()=>{const m=document.cookie.match(/(?:^|; )csrf_token=([^;]*)/);return m?decodeURIComponent(m[1]):''};window.fetch=(input,init={})=>{const method=(init.method||'GET').toUpperCase();const url=typeof input==='string'?input:(input&&input.url)||'';const same=!/^https?:\/\//i.test(url)||url.startsWith(location.origin);if(same&&['POST','PUT','PATCH','DELETE'].includes(method)){const h=new Headers(init.headers||{});h.set('X-CSRF-Token',csrf());init={...init,headers:h,credentials:init.credentials||'same-origin'};}return nativeFetch(input,init);};})();
+</script></head>
+<body class="min-h-screen bg-slate-100 font-sans text-slate-800">
+
+<div class="min-h-screen lg:flex">
+    <!-- Admin-only sidebar: intentionally independent from the public Upload/Review/DDO/Payment stepper. -->
+    <aside class="hidden lg:flex lg:w-64 xl:w-72 lg:fixed lg:inset-y-0 bg-slate-950 text-slate-200 flex-col z-40">
+        <div class="h-20 px-6 flex items-center border-b border-white/10">
+            <div class="w-10 h-10 rounded-xl bg-prashasan-600 flex items-center justify-center shadow-lg shadow-prashasan-900/30">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="font-bold text-white tracking-tight">Prashasan</p>
+                <p class="text-xs text-slate-400">Form 16 Administration</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1">
+            <button type="button" data-nav-target="overview" class="admin-nav w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-left bg-prashasan-700 text-white">
+                <span>⌂</span><span>Overview</span>
+            </button>
+            <button type="button" data-nav-target="payments" class="admin-nav w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-left text-slate-300 hover:bg-white/5 hover:text-white">
+                <span>₹</span><span>Payments</span>
+                <span id="sidebar_pending_badge" class="ml-auto min-w-6 h-6 px-1.5 rounded-full bg-amber-400 text-slate-950 text-xs font-bold flex items-center justify-center {% if not (stats.pending_payments or 0) %}hidden{% endif %}">{{ stats.pending_payments or 0 }}</span>
+            </button>
+            <button type="button" data-nav-target="applications" class="admin-nav w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-left text-slate-300 hover:bg-white/5 hover:text-white">
+                <span>◫</span><span>Applications</span>
+                <span id="sidebar_incomplete_badge" class="ml-auto min-w-6 h-6 px-1.5 rounded-full bg-slate-700 text-xs font-bold flex items-center justify-center {% if not (stats.incomplete_users or 0) %}hidden{% endif %}">{{ stats.incomplete_users or 0 }}</span>
+            </button>
+            <button type="button" data-nav-target="documents" class="admin-nav w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-left text-slate-300 hover:bg-white/5 hover:text-white">
+                <span>▤</span><span>Form 16 & Delivery</span>
+            </button>
+            <button type="button" data-nav-target="settings" class="admin-nav w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-left text-slate-300 hover:bg-white/5 hover:text-white">
+                <span>⚙</span><span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-white/10">
+            <div class="rounded-xl bg-white/5 border border-white/10 p-4 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-xs font-semibold text-slate-200">Admin authenticated</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2">Live sync checks for new activity every 4 seconds. No automatic page reload.</p>
+            </div>
+            <a href="/admin/logout" class="w-full flex items-center justify-center px-4 py-2.5 rounded-xl border border-red-400/20 bg-red-500/10 text-red-300 hover:bg-red-500/20 text-sm font-semibold">Logout</a>
+        </div>
+    </aside>
+
+    <div class="flex-1 lg:ml-64 xl:ml-72 min-w-0">
+        <!-- Mobile / top header -->
+        <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200">
+            <div class="h-16 lg:h-20 px-4 sm:px-6 xl:px-8 flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <div class="lg:hidden w-9 h-9 rounded-lg bg-prashasan-700 text-white flex items-center justify-center font-bold">P</div>
+                        <div>
+                            <h1 id="panel_title" class="text-lg sm:text-xl font-bold text-slate-900 truncate">Dashboard Overview</h1>
+                            <p class="hidden sm:block text-xs text-slate-500 mt-0.5">Form 16 operations, payments and service configuration</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <div class="hidden md:flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                        <span id="live_status_dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span id="live_status" class="text-xs font-semibold text-slate-600">Live · 4s</span>
+                    </div>
+                    <button type="button" id="notification_button" onclick="toggleBrowserNotifications()" class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-sm">
+                        <span aria-hidden="true">🔔</span>
+                        <span id="notification_button_text" class="hidden sm:inline">Enable alerts</span>
+                    </button>
+                    <button type="button" id="manual_refresh_button" onclick="manualRefresh()" class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <span class="hidden sm:inline">Sync now</span>
+                    </button>
+                    <a href="/admin/logout" class="lg:hidden rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-sm font-semibold text-red-700">Logout</a>
+                </div>
+            </div>
+
+            <!-- Mobile section navigation -->
+            <div class="lg:hidden px-4 pb-3 overflow-x-auto admin-scrollbar">
+                <div class="flex gap-2 min-w-max">
+                    <button type="button" data-nav-target="overview" class="admin-nav px-3 py-1.5 rounded-lg bg-prashasan-700 text-white text-xs font-semibold">Overview</button>
+                    <button type="button" data-nav-target="payments" class="admin-nav px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold">Payments</button>
+                    <button type="button" data-nav-target="applications" class="admin-nav px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold">Applications</button>
+                    <button type="button" data-nav-target="documents" class="admin-nav px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold">Form 16</button>
+                    <button type="button" data-nav-target="settings" class="admin-nav px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold">Settings</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-4 sm:p-6 xl:p-8 max-w-[1600px] mx-auto">
+            <!-- OVERVIEW -->
+            <section data-admin-panel="overview" class="is-active space-y-6">
+                <div class="rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-prashasan-900 text-white p-6 sm:p-8 shadow-xl shadow-slate-300/30 overflow-hidden relative">
+                    <div class="relative z-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
+                        <div>
+                            <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-teal-100 mb-4">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Service console
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Form 16 Operations</h2>
+                            <p class="text-sm text-slate-300 mt-2 max-w-2xl">One clean view for user journeys, payment verification, PDF delivery and configuration.</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 min-w-full sm:min-w-[360px] xl:min-w-[420px]">
+                            <div class="rounded-xl bg-white/10 border border-white/10 p-4">
+                                <p class="text-xs text-slate-300">Active FY</p>
+                                <p id="overview_active_fy" class="text-lg font-bold mt-1">{{ financial_year or "Not selected" }}</p>
+                            </div>
+                            <div class="rounded-xl bg-white/10 border border-white/10 p-4">
+                                <p class="text-xs text-slate-300">Assessment Year</p>
+                                <p id="overview_active_ay" class="text-lg font-bold mt-1">{{ assessment_year or "—" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+                    {% set cards = [
+                        ('unique_visitors', 'Visitors', stats.unique_visitors or 0, 'Unique browsers', 'slate'),
+                        ('total_users', 'Registered', stats.total_users or 0, 'Saved users', 'slate'),
+                        ('incomplete_users', 'Incomplete', stats.incomplete_users or 0, 'Needs follow-up', 'amber'),
+                        ('pending_payments', 'Pending', stats.pending_payments or 0, 'Payment review', 'blue'),
+                        ('approved_payments', 'Approved', stats.approved_payments or 0, 'Verified payments', 'emerald'),
+                        ('total_revenue', 'Revenue', '₹%.2f'|format(stats.total_revenue or 0), 'Approved only', 'teal')
+                    ] %}
+                    {% for key, label, value, hint, tone in cards %}
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[11px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold">{{ label }}</p>
+                            <span class="w-2 h-2 rounded-full {% if tone == 'amber' %}bg-amber-400{% elif tone == 'blue' %}bg-blue-500{% elif tone == 'emerald' %}bg-emerald-500{% elif tone == 'teal' %}bg-teal-500{% else %}bg-slate-400{% endif %}"></span>
+                        </div>
+                        <p data-live-stat="{{ key }}" class="text-xl sm:text-2xl font-bold text-slate-900 mt-2">{{ value }}</p>
+                        <p class="text-[11px] text-slate-400 mt-1">{{ hint }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                        <div class="flex items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h3 class="font-bold text-slate-900">Application funnel</h3>
+                                <p class="text-xs text-slate-500 mt-1">Live counts from saved journey records.</p>
+                            </div>
+                            <button type="button" onclick="openPanel('applications')" class="text-xs font-semibold text-prashasan-700 hover:text-prashasan-900">View applications →</button>
+                        </div>
+                        {% set funnel = [
+                            ('unique_visitors', 'Visitors', stats.unique_visitors or 0),
+                            ('form_started', 'Form started', stats.form_started or 0),
+                            ('payment_page_reached', 'Payment page', stats.payment_page_reached or 0),
+                            ('approved_payments', 'Approved', stats.approved_payments or 0)
+                        ] %}
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            {% for key, label, value in funnel %}
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                <p class="text-xs text-slate-500 font-medium">{{ label }}</p>
+                                <p data-live-stat="{{ key }}" class="text-2xl font-bold text-slate-900 mt-2">{{ value }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <div>
+                                <h3 class="font-bold text-slate-900">Delivery health</h3>
+                                <p class="text-xs text-slate-500 mt-1">PDF email audit</p>
+                            </div>
+                            <button type="button" onclick="openPanel('documents')" class="text-xs font-semibold text-prashasan-700">Details →</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3">
+                                <span class="text-sm font-medium text-emerald-800">Emails sent</span><span data-live-stat="email_sent" class="font-bold text-emerald-700">{{ stats.email_sent or 0 }}</span>
+                            </div>
+                            <div class="flex items-center justify-between rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+                                <span class="text-sm font-medium text-red-800">Email failed</span><span data-live-stat="email_failed" class="font-bold text-red-700">{{ stats.email_failed or 0 }}</span>
+                            </div>
+                            <div class="flex items-center justify-between rounded-xl bg-slate-50 border border-slate-200 px-4 py-3">
+                                <span class="text-sm font-medium text-slate-700">Admin generated</span><span data-live-stat="admin_generated" class="font-bold text-slate-900">{{ stats.admin_generated or 0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-900">Payment queue</h3>
+                                <p class="text-xs text-slate-500 mt-1">Items waiting for admin verification.</p>
+                            </div>
+                            <span id="overview_pending_badge" class="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-bold">{{ stats.pending_payments or 0 }} pending</span>
+                        </div>
+                        <button type="button" onclick="openPanel('payments')" class="w-full rounded-xl bg-slate-900 hover:bg-slate-800 text-white py-3 text-sm font-semibold">Open payment management</button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-900">Service configuration</h3>
+                                <p class="text-xs text-slate-500 mt-1">FY, fee, UPI and integrations.</p>
+                            </div>
+                            <span id="overview_fy_badge" class="rounded-full bg-prashasan-50 text-prashasan-800 px-3 py-1 text-xs font-bold">{{ financial_year or "FY missing" }}</span>
+                        </div>
+                        <button type="button" onclick="openPanel('settings')" class="w-full rounded-xl border border-prashasan-200 bg-prashasan-50 hover:bg-prashasan-100 text-prashasan-800 py-3 text-sm font-semibold">Open settings</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAYMENTS -->
+            <section data-admin-panel="payments" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-5 sm:p-6 border-b border-slate-200 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">Payment Management</h2>
+                            <p class="text-sm text-slate-500 mt-1">Verify manual UTR payments. Approved entries count toward verified revenue.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2" id="payment_filters">
+                            <button type="button" id="payment_filter_all" data-filter="all" class="payment-filter px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-slate-900 text-white">All ({{ payments|length }})</button>
+                            <button type="button" id="payment_filter_pending" data-filter="pending" class="payment-filter px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-600">Pending ({{ stats.pending_payments or 0 }})</button>
+                            <button type="button" id="payment_filter_approved" data-filter="approved" class="payment-filter px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-600">Approved ({{ stats.approved_payments or 0 }})</button>
+                            <button type="button" id="payment_filter_rejected" data-filter="rejected" class="payment-filter px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-600">Rejected ({{ stats.rejected_payments or 0 }})</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto admin-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[980px]">
+                            <thead><tr class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider">
+                                <th class="p-3.5 border-b border-slate-200">Employee</th><th class="p-3.5 border-b border-slate-200">Contact</th><th class="p-3.5 border-b border-slate-200">Amount</th><th class="p-3.5 border-b border-slate-200">UTR</th><th class="p-3.5 border-b border-slate-200">Submitted</th><th class="p-3.5 border-b border-slate-200">Status</th><th class="p-3.5 border-b border-slate-200 text-right">Action</th>
+                            </tr></thead>
+                            <tbody class="divide-y divide-slate-100" id="payments_body">
+                                {% for payment in payments %}
+                                <tr class="payment-row hover:bg-slate-50/70" data-payment-id="{{ payment.payment_id }}" data-status="{{ payment.status }}">
+                                    <td class="p-4"><p class="text-sm font-semibold text-slate-900">{{ payment.name }}</p><p class="text-xs text-slate-400 font-mono mt-1">{{ payment.pan }}</p></td>
+                                    <td class="p-4"><p class="text-sm text-slate-700 break-all">{{ payment.email or "—" }}</p><p class="text-xs text-slate-500 mt-1">{{ payment.mobile or "—" }}</p></td>
+                                    <td class="p-4 text-sm font-bold text-slate-800">₹{{ "%.2f"|format(payment.amount or 0) }}</td>
+                                    <td class="p-4 text-sm font-mono text-slate-700">{{ payment.utr_number }}</td>
+                                    <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{% if payment.created_at %}{{ payment.created_at.strftime("%d %b %Y, %I:%M %p") }}{% else %}—{% endif %}</td>
+                                    <td class="p-4">
+                                        {% if payment.status == "approved" %}<span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold">APPROVED</span>
+                                        {% elif payment.status == "rejected" %}<span class="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-full font-bold">REJECTED</span>
+                                        {% else %}<span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-bold">PENDING</span>{% endif %}
+                                    </td>
+                                    <td class="p-4 text-right whitespace-nowrap">
+                                        {% if payment.status == "pending" %}
+                                        <form action="/admin/payment/approve/{{ payment.payment_id }}" method="POST" class="inline live-payment-action" data-action="approve"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-semibold">Approve</button></form>
+                                        <form action="/admin/payment/decline/{{ payment.payment_id }}" method="POST" class="inline ml-1 live-payment-action" data-action="decline"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="bg-white hover:bg-red-50 text-red-600 border border-red-200 text-xs px-3 py-2 rounded-lg font-semibold">Decline</button></form>
+                                        {% else %}<span class="text-xs text-slate-400">Completed</span>{% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}<tr><td colspan="7" class="p-12 text-center text-slate-500 text-sm">No payment requests found.</td></tr>{% endfor %}
+                                <tr id="payment_filter_empty" class="hidden"><td colspan="7" class="p-12 text-center text-slate-500 text-sm">No payments in this status.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- APPLICATIONS -->
+            <section data-admin-panel="applications" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-5 sm:p-6 border-b border-slate-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div><h2 class="text-xl font-bold text-slate-900">Incomplete / Abandoned Applications</h2><p class="text-sm text-slate-500 mt-1">Users who started the service but have not completed an approved payment flow.</p></div>
+                            <span id="incomplete_badge" class="rounded-full bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 text-xs font-bold">{{ stats.incomplete_users or 0 }} incomplete</span>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto admin-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[1050px]">
+                            <thead><tr class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider"><th class="p-3.5 border-b">Name / User</th><th class="p-3.5 border-b">Email</th><th class="p-3.5 border-b">Mobile</th><th class="p-3.5 border-b">Last Stage</th><th class="p-3.5 border-b">Progress</th><th class="p-3.5 border-b">Payment</th><th class="p-3.5 border-b">Reminder</th><th class="p-3.5 border-b">Last Active</th></tr></thead>
+                            <tbody id="incomplete_body" class="divide-y divide-slate-100">
+                                {% for item in incomplete_users[:100] %}
+                                <tr class="hover:bg-slate-50/70">
+                                    <td class="p-4"><p class="text-sm font-semibold text-slate-900">{{ item.name or "Unknown / not captured" }}</p><p class="text-[11px] text-slate-400 font-mono mt-1 max-w-48 truncate">{{ item.user_id or item.session_id }}</p></td>
+                                    <td class="p-4 text-sm text-slate-700 break-all">{{ item.email or "—" }}</td><td class="p-4 text-sm text-slate-700">{{ item.mobile or "—" }}</td>
+                                    <td class="p-4"><p class="text-sm font-medium text-slate-700">{{ (item.current_page or "unknown")|replace("_", " ")|title }}</p><p class="text-xs text-slate-400 mt-1">{{ (item.current_step or item.last_completed_step or "—")|replace("_", " ")|title }}</p></td>
+                                    <td class="p-4"><div class="w-28 bg-slate-200 rounded-full h-2 overflow-hidden"><div class="bg-prashasan-600 h-2 rounded-full" style="width: {{ [item.progress_percent or 0, 100]|min }}%;"></div></div><p class="text-xs text-slate-500 mt-1">{{ item.progress_percent or 0 }}%</p></td>
+                                    <td class="p-4"><span class="text-xs font-semibold px-2 py-1 rounded-full bg-slate-100 text-slate-700">{{ (item.payment_status or "not_started")|replace("_", " ")|upper }}</span></td>
+                                    <td class="p-4"><span class="text-xs font-medium {% if item.reminder_status == 'sent' %}text-emerald-700{% elif item.reminder_status == 'failed' %}text-red-700{% elif item.reminder_status == 'pending' %}text-amber-700{% else %}text-slate-500{% endif %}">{{ (item.reminder_status or "not_eligible")|replace("_", " ")|title }}</span></td>
+                                    <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{% if item.last_seen_at %}{{ item.last_seen_at.strftime("%d %b %Y, %I:%M %p") }}{% else %}—{% endif %}</td>
+                                </tr>
+                                {% else %}<tr><td colspan="8" class="p-12 text-center text-slate-500 text-sm">No incomplete applications found.</td></tr>{% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if incomplete_users|length > 100 %}<div class="px-6 py-3 bg-amber-50 border-t border-amber-100 text-xs text-amber-800">Showing the 100 most recent incomplete applications out of {{ incomplete_users|length }}.</div>{% endif %}
+                </div>
+            </section>
+
+            <!-- DOCUMENTS / DELIVERY -->
+            <section data-admin-panel="documents" class="space-y-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                        <div class="w-11 h-11 rounded-xl bg-prashasan-50 text-prashasan-700 flex items-center justify-center mb-4">▤</div>
+                        <h2 class="text-lg font-bold text-slate-900">Admin Direct Form 16</h2>
+                        <p class="text-sm text-slate-500 mt-1">Generate without a payment record. Employee, email, DDO TAN and active FY are required.</p>
+                        <form id="admin_generate_form" method="POST" target="_blank" class="mt-5" onsubmit="return prepareAdminGenerateForm()"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <label for="admin_employee" class="block text-sm font-semibold text-slate-700 mb-1.5">Employee</label>
+                            <select id="admin_employee" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-prashasan-100 focus:border-prashasan-600">
+                                <option value="">Select employee</option>
+                                {% for employee in employees %}<option value="{{ employee.user_id }}">{{ employee.name }} — {{ employee.pan }}{% if employee.tan_id %} — TAN linked{% else %} — TAN missing{% endif %}</option>{% endfor %}
+                            </select>
+                            <button type="submit" class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-3 rounded-xl">Generate & Send Form 16</button>
+                        </form>
+                    </div>
+
+                    <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-5 sm:p-6 border-b border-slate-200 flex items-center justify-between gap-4"><div><h2 class="text-lg font-bold text-slate-900">Admin-generated history</h2><p class="text-sm text-slate-500 mt-1">Separate from paid-user revenue.</p></div><span id="admin_generated_badge" class="text-xs font-bold rounded-full bg-slate-100 px-3 py-1">{{ stats.admin_generated or 0 }} records</span></div>
+                        <div class="overflow-x-auto admin-scrollbar"><table class="w-full text-left min-w-[760px]"><thead><tr class="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider"><th class="p-3.5 border-b">Employee</th><th class="p-3.5 border-b">FY</th><th class="p-3.5 border-b">Status</th><th class="p-3.5 border-b">Downloads</th><th class="p-3.5 border-b">Created</th><th class="p-3.5 border-b text-right">PDF</th></tr></thead><tbody class="divide-y divide-slate-100">
+                            {% for item in admin_generated[:50] %}<tr class="hover:bg-slate-50/70"><td class="p-4"><p class="text-sm font-semibold text-slate-900">{{ item.name }}</p><p class="text-xs text-slate-500 font-mono mt-1">{{ item.pan }}</p><p class="text-xs text-slate-400 break-all mt-1">{{ item.email or "No email" }}</p></td><td class="p-4 text-sm font-medium">{{ item.financial_year }}</td><td class="p-4">{% if item.status == "generated" %}<span class="text-xs font-bold bg-emerald-100 text-emerald-700 rounded-full px-2.5 py-1">GENERATED</span>{% elif item.status == "failed" %}<span class="text-xs font-bold bg-red-100 text-red-700 rounded-full px-2.5 py-1">FAILED</span>{% else %}<span class="text-xs font-bold bg-amber-100 text-amber-800 rounded-full px-2.5 py-1">{{ item.status|upper }}</span>{% endif %}</td><td class="p-4 text-sm">{{ item.download_count or 0 }}</td><td class="p-4 text-xs text-slate-500 whitespace-nowrap">{% if item.created_at %}{{ item.created_at.strftime("%d %b %Y, %I:%M %p") }}{% else %}—{% endif %}</td><td class="p-4 text-right"><a href="/api/download/form16-generation/{{ item.generation_id }}" target="_blank" class="text-xs font-bold text-prashasan-700 hover:underline">Download</a></td></tr>
+                            {% else %}<tr><td colspan="6" class="p-12 text-center text-slate-500 text-sm">No administrator-generated Form 16 records yet.</td></tr>{% endfor %}
+                        </tbody></table></div>
+                    </div>
+                </div>
+
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+                        <div><p class="text-xs uppercase tracking-wider text-prashasan-700 font-bold">Full admin workflow</p><h2 class="text-xl font-bold text-slate-900 mt-1">New Employee → Salary Slips → Form 16</h2><p class="text-sm text-slate-500 mt-1">No payment/UTR is created. Upload slips, enter employee + DDO details, then generate and email directly.</p></div>
+                        <span class="rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-bold">Payment bypass</span>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-5">
+                        <div class="space-y-3">
+                            <input id="ag_slips" type="file" accept="application/pdf,.pdf" multiple class="w-full border border-slate-300 rounded-xl px-3 py-2.5">
+                            <div id="ag_extract_status" class="text-xs text-slate-500">Upload one or more text-based salary-slip PDFs.</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <input id="ag_name" placeholder="Employee name" class="border rounded-xl px-3 py-2.5">
+                                <input id="ag_pan" placeholder="Employee PAN" class="border rounded-xl px-3 py-2.5 uppercase">
+                                <input id="ag_email" type="email" placeholder="Employee email" class="border rounded-xl px-3 py-2.5">
+                                <input id="ag_mobile" placeholder="Mobile (optional)" class="border rounded-xl px-3 py-2.5">
+                            </div>
+                            <textarea id="ag_office" placeholder="Office / School name & address" class="w-full border rounded-xl px-3 py-2.5" rows="2"></textarea>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <input id="ag_tan" placeholder="DDO TAN" class="border rounded-xl px-3 py-2.5 uppercase">
+                                <input id="ag_employer_pan" placeholder="Employer PAN (optional)" class="border rounded-xl px-3 py-2.5 uppercase">
+                                <input id="ag_officer" placeholder="DDO / Officer name" class="border rounded-xl px-3 py-2.5">
+                                <input id="ag_officer_father" placeholder="Officer father name" class="border rounded-xl px-3 py-2.5">
+                                <input id="ag_employer" placeholder="Employer name" class="border rounded-xl px-3 py-2.5">
+                                <input id="ag_designation" placeholder="DDO designation" class="border rounded-xl px-3 py-2.5">
+                            </div>
+                            <textarea id="ag_employer_address" placeholder="Employer address" class="w-full border rounded-xl px-3 py-2.5" rows="2"></textarea>
+                            <div id="ag_arrear_box" class="hidden rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"></div>
+                            <button type="button" id="ag_generate_btn" onclick="adminCreateAndGenerate()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl px-4 py-3">Generate PDF & Email Employee</button>
+                            <div id="ag_message" class="hidden text-sm font-medium"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><p class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Emails sent</p><p data-live-stat="email_sent" class="text-3xl font-bold text-emerald-700 mt-2">{{ stats.email_sent or 0 }}</p></div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><p class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Email failed</p><p data-live-stat="email_failed" class="text-3xl font-bold text-red-700 mt-2">{{ stats.email_failed or 0 }}</p></div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><p class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Incomplete reminders</p><p class="text-sm font-semibold text-slate-800 mt-2">Tracked per application</p><p class="text-xs text-slate-500 mt-1">Open Applications to see reminder status.</p></div>
+                </div>
+            </section>
+
+            <!-- SETTINGS -->
+            <section data-admin-panel="settings" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-5 sm:p-6 border-b border-slate-200"><h2 class="text-xl font-bold text-slate-900">Service Settings</h2><p class="text-sm text-slate-500 mt-1">Configuration is grouped by purpose so operational data is not mixed with credentials.</p></div>
+
+                    <div class="p-5 sm:p-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <!-- FY -->
+                        <div class="rounded-2xl border border-slate-200 p-5">
+                            <div class="flex items-start justify-between gap-4"><div><p class="text-xs uppercase tracking-wider text-prashasan-700 font-bold">Tax period</p><h3 class="text-lg font-bold text-slate-900 mt-1">Financial Year</h3></div><span class="rounded-full bg-prashasan-50 text-prashasan-800 px-3 py-1 text-xs font-bold">Core</span></div>
+                            <div class="grid grid-cols-2 gap-3 mt-5"><div class="rounded-xl bg-slate-50 border border-slate-200 p-4"><p class="text-[11px] uppercase text-slate-500 font-semibold">Active FY</p><p id="active_fy" class="text-lg font-bold mt-1">{{ financial_year or "Not Selected" }}</p></div><div class="rounded-xl bg-slate-50 border border-slate-200 p-4"><p class="text-[11px] uppercase text-slate-500 font-semibold">Assessment Year</p><p id="active_ay" class="text-lg font-bold mt-1">{{ assessment_year or "—" }}</p></div></div>
+                            <label for="financial_year" class="block text-sm font-semibold text-slate-700 mt-5 mb-1.5">Select Financial Year</label>
+                            <div class="flex gap-2"><select id="financial_year" class="admin-setting flex-1 min-w-0 border border-slate-300 rounded-xl px-3 py-2.5 bg-white focus:ring-2 focus:ring-prashasan-100 focus:border-prashasan-600"><option value="">Select FY</option>{% for fy in ["2024-25", "2025-26", "2026-27", "2027-28", "2028-29", "2029-30", "2030-31", "2031-32", "2032-33"] %}<option value="{{ fy }}" {% if financial_year == fy %}selected{% endif %}>{{ fy }}</option>{% endfor %}</select><button type="button" id="save_fy_button" onclick="saveFinancialYear()" class="bg-prashasan-700 hover:bg-prashasan-800 text-white font-semibold px-4 py-2.5 rounded-xl">Save</button></div>
+                            <div id="fy_message" class="hidden mt-3 text-sm font-medium"></div>
+                        </div>
+
+                        <!-- Manual payment -->
+                        <div class="rounded-2xl border border-slate-200 p-5">
+                            <div class="flex items-start justify-between gap-4"><div><p class="text-xs uppercase tracking-wider text-blue-700 font-bold">Manual collection</p><h3 class="text-lg font-bold text-slate-900 mt-1">Fee & UPI</h3></div><span class="rounded-full bg-blue-50 text-blue-700 px-3 py-1 text-xs font-bold">Active</span></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5"><div><label for="fee_amount" class="block text-sm font-semibold text-slate-700 mb-1.5">Processing Fee (₹)</label><input id="fee_amount" type="number" min="0" step="0.01" value="{{ fee_amount }}" class="admin-setting w-full border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-prashasan-100 focus:border-prashasan-600"></div><div><label for="upi_id" class="block text-sm font-semibold text-slate-700 mb-1.5">UPI ID</label><input id="upi_id" type="text" value="{{ upi_id }}" placeholder="merchant@upi" class="admin-setting w-full border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-prashasan-100 focus:border-prashasan-600"></div></div>
+                            <p class="text-xs text-slate-500 mt-4">This fee is the service amount used by the current manual UPI flow. Gateway pricing can reuse the same service fee later.</p>
+                        </div>
+
+                        <!-- Notifications -->
+                        <div class="rounded-2xl border border-slate-200 p-5">
+                            <div class="flex items-start justify-between gap-4"><div><p class="text-xs uppercase tracking-wider text-violet-700 font-bold">Admin alerts</p><h3 class="text-lg font-bold text-slate-900 mt-1">Telegram</h3></div><span class="rounded-full bg-violet-50 text-violet-700 px-3 py-1 text-xs font-bold">Optional</span></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5"><div><label for="telegram_bot_token" class="block text-sm font-semibold text-slate-700 mb-1.5">Bot Token</label><input id="telegram_bot_token" type="password" value="{{ telegram_bot_token }}" autocomplete="off" class="admin-setting w-full border border-slate-300 rounded-xl px-3 py-2.5"></div><div><label for="telegram_chat_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Chat ID</label><input id="telegram_chat_id" type="text" value="{{ telegram_chat_id }}" class="admin-setting w-full border border-slate-300 rounded-xl px-3 py-2.5"></div></div>
+                        </div>
+
+                        <!-- Browser notifications -->
+                        <div class="rounded-2xl border border-slate-200 p-5">
+                            <div class="flex items-start justify-between gap-4">
+                                <div><p class="text-xs uppercase tracking-wider text-cyan-700 font-bold">This device</p><h3 class="text-lg font-bold text-slate-900 mt-1">Browser Notifications</h3></div>
+                                <span id="notification_status_badge" class="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-bold">Checking…</span>
+                            </div>
+                            <p class="text-sm text-slate-500 mt-4 leading-6">Get a device alert when a new UTR reaches the admin queue while this dashboard session is active. Telegram remains the fallback when the browser is closed.</p>
+                            <button type="button" onclick="toggleBrowserNotifications()" class="mt-4 w-full rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 py-2.5 text-sm font-semibold">Enable / Disable on this device</button>
+                        </div>
+
+                        <!-- Email status / future backend wiring -->
+                        <div class="rounded-2xl border border-slate-200 p-5">
+                            <div class="flex items-start justify-between gap-4"><div><p class="text-xs uppercase tracking-wider text-emerald-700 font-bold">Transactional email</p><h3 class="text-lg font-bold text-slate-900 mt-1">Email Delivery</h3></div><span class="rounded-full {% if smtp_configured|default(false) %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-800{% endif %} px-3 py-1 text-xs font-bold">{% if smtp_configured|default(false) %}Configured{% else %}Server setup required{% endif %}</span></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+                                <input id="email_from_name" placeholder="Sender name" class="border rounded-xl px-3 py-2.5">
+                                <input id="email_username" type="email" placeholder="Sender Gmail / SMTP username" class="border rounded-xl px-3 py-2.5">
+                                <input id="email_host" value="smtp.gmail.com" placeholder="SMTP host" class="border rounded-xl px-3 py-2.5">
+                                <input id="email_port" type="number" value="587" placeholder="SMTP port" class="border rounded-xl px-3 py-2.5">
+                                <input id="email_password" type="password" placeholder="App Password / SMTP password (leave blank to keep saved)" class="sm:col-span-2 border rounded-xl px-3 py-2.5" autocomplete="new-password">
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-2 mt-3"><button type="button" onclick="saveEmailIntegration()" class="flex-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 text-sm font-semibold">Save Email Settings</button><input id="email_test_recipient" type="email" placeholder="Test recipient" class="flex-1 border rounded-xl px-3 py-2.5"><button type="button" onclick="sendTestEmail()" class="rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 px-4 py-2.5 text-sm font-semibold">Send Test</button></div>
+                            <p class="text-[11px] text-slate-500 mt-2">For Gmail use an App Password, not your normal Google password. Saved secrets are encrypted using APP_ENCRYPTION_KEY and are never returned to this page.</p>
+                            <div class="grid grid-cols-2 gap-3 mt-4"><div class="rounded-xl border border-slate-200 p-3"><p class="text-xs text-slate-500">Sent</p><p data-live-stat="email_sent" class="text-xl font-bold text-emerald-700 mt-1">{{ stats.email_sent or 0 }}</p></div><div class="rounded-xl border border-slate-200 p-3"><p class="text-xs text-slate-500">Failed</p><p data-live-stat="email_failed" class="text-xl font-bold text-red-700 mt-1">{{ stats.email_failed or 0 }}</p></div></div>
+                        </div>
+
+                        <!-- Razorpay -->
+                        <div class="xl:col-span-2 rounded-2xl border border-slate-200 p-5">
+                            <div class="flex items-start justify-between gap-4"><div><p class="text-xs uppercase tracking-wider text-indigo-700 font-bold">Payment gateway</p><h3 class="text-lg font-bold text-slate-900 mt-1">Razorpay</h3><p class="text-sm text-slate-500 mt-1">Manual UTR remains available even when gateway is disabled.</p></div><span id="razorpay_badge" class="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-bold">Checking…</span></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mt-5">
+                                <label class="flex items-center gap-2 border rounded-xl px-3 py-2.5"><input id="rz_enabled" type="checkbox"> <span class="text-sm font-semibold">Enable gateway</span></label>
+                                <select id="rz_mode" class="border rounded-xl px-3 py-2.5"><option value="test">Test</option><option value="live">Live</option></select>
+                                <input id="rz_key_id" placeholder="Key ID (rzp_test_...)" class="border rounded-xl px-3 py-2.5">
+                                <input id="rz_key_secret" type="password" placeholder="Key Secret (blank = keep saved)" class="border rounded-xl px-3 py-2.5" autocomplete="new-password">
+                                <input id="rz_webhook_secret" type="password" placeholder="Webhook Secret (blank = keep saved)" class="sm:col-span-2 border rounded-xl px-3 py-2.5" autocomplete="new-password">
+                                <button type="button" onclick="saveRazorpayIntegration()" class="sm:col-span-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl px-4 py-2.5 text-sm font-semibold">Save Razorpay Settings</button>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-3">Webhook URL: <span class="font-mono">/api/payment/razorpay/webhook</span>. Configure the same webhook secret in Razorpay Dashboard.</p>
+                        </div>
+                    </div>
+
+                    <div class="px-5 sm:px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div><p class="text-xs font-semibold text-slate-700">Current save endpoint</p><p class="text-xs text-slate-500 mt-0.5">Saves Processing Fee, UPI ID and Telegram settings.</p></div>
+                        <div class="flex items-center gap-3"><span id="settings_message" class="hidden text-sm font-medium"></span><button type="button" id="save_settings_button" onclick="saveAdminSettings()" class="bg-prashasan-700 hover:bg-prashasan-800 text-white font-semibold px-5 py-2.5 rounded-xl shadow-sm">Save Current Settings</button></div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                    <div class="flex gap-3"><div class="mt-0.5 text-amber-700">!</div><div><h3 class="font-bold text-amber-900">Persistence warning</h3><p class="text-sm text-amber-800 mt-1 leading-6">If this deployment is still using the local SQLite file, settings and user records can disappear after a Render restart/redeploy. A persistent database is required before production use.</p></div></div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div id="admin_toast_stack" class="fixed top-20 right-4 sm:right-6 z-[100] w-[min(92vw,380px)] space-y-3 pointer-events-none"></div>
+
+<script>
+    const LIVE_SYNC_MS = 4000;
+    let settingsDirty = false;
+    let activePaymentFilter = sessionStorage.getItem("adminPaymentFilter") || "all";
+    let liveSyncTimer = null;
+    let liveSyncInFlight = false;
+    let initialLiveSyncComplete = false;
+    let alertsEnabled = false;
+    let audioContext = null;
+
+    const knownPaymentIds = new Set(
+        Array.from(document.querySelectorAll(".payment-row[data-payment-id]"))
+            .map(row => row.dataset.paymentId)
+            .filter(Boolean)
+    );
+
+    const panelTitles = {
+        overview: "Dashboard Overview",
+        payments: "Payment Management",
+        applications: "Applications",
+        documents: "Form 16 & Delivery",
+        settings: "Service Settings"
+    };
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function formatMoney(value) {
+        const amount = Number(value || 0);
+        return `₹${Number.isFinite(amount) ? amount.toFixed(2) : "0.00"}`;
+    }
+
+    function formatDateTime(value) {
+        if (!value) return "—";
+        let normalized = String(value);
+        if (!/[zZ]|[+-]\d\d:\d\d$/.test(normalized)) normalized += "Z";
+        const date = new Date(normalized);
+        if (Number.isNaN(date.getTime())) return "—";
+        return new Intl.DateTimeFormat("en-IN", {
+            day: "2-digit", month: "short", year: "numeric",
+            hour: "2-digit", minute: "2-digit", hour12: true
+        }).format(date);
+    }
+
+    function titleCase(value) {
+        return String(value || "—")
+            .replaceAll("_", " ")
+            .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function openPanel(name) {
+        if (!panelTitles[name]) name = "overview";
+        document.querySelectorAll("[data-admin-panel]").forEach(panel => {
+            panel.classList.toggle("is-active", panel.dataset.adminPanel === name);
+        });
+        document.querySelectorAll(".admin-nav").forEach(button => {
+            const active = button.dataset.navTarget === name;
+            if (window.innerWidth >= 1024) {
+                button.classList.toggle("bg-prashasan-700", active);
+                button.classList.toggle("text-white", active);
+                button.classList.toggle("text-slate-300", !active);
+            } else {
+                button.classList.toggle("bg-prashasan-700", active);
+                button.classList.toggle("text-white", active);
+                button.classList.toggle("bg-slate-100", !active);
+                button.classList.toggle("text-slate-600", !active);
+            }
+        });
+        document.getElementById("panel_title").textContent = panelTitles[name];
+        sessionStorage.setItem("adminActivePanel", name);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showToast(title, message, tone = "info", onClick = null) {
+        const stack = document.getElementById("admin_toast_stack");
+        if (!stack) return;
+        const toneClass = tone === "success"
+            ? "border-emerald-200 bg-emerald-50"
+            : tone === "error"
+                ? "border-red-200 bg-red-50"
+                : tone === "warning"
+                    ? "border-amber-200 bg-amber-50"
+                    : "border-slate-200 bg-white";
+        const toast = document.createElement("button");
+        toast.type = "button";
+        toast.className = `pointer-events-auto w-full text-left rounded-2xl border ${toneClass} shadow-xl p-4 transition opacity-0 translate-y-2`;
+        toast.innerHTML = `
+            <div class="flex items-start gap-3">
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-bold text-slate-900">${escapeHtml(title)}</p>
+                    <p class="text-xs text-slate-600 mt-1 leading-5 break-words">${escapeHtml(message)}</p>
+                </div>
+                <span class="text-slate-400 text-sm">×</span>
+            </div>`;
+        toast.addEventListener("click", () => {
+            if (typeof onClick === "function") onClick();
+            toast.remove();
+        });
+        stack.prepend(toast);
+        requestAnimationFrame(() => toast.classList.remove("opacity-0", "translate-y-2"));
+        setTimeout(() => {
+            toast.classList.add("opacity-0", "translate-y-2");
+            setTimeout(() => toast.remove(), 250);
+        }, 7000);
+    }
+
+    function setLiveStatus(text, state = "ok") {
+        const label = document.getElementById("live_status");
+        const dot = document.getElementById("live_status_dot");
+        if (label) label.textContent = text;
+        if (dot) {
+            dot.className = "w-2 h-2 rounded-full " + (
+                state === "error" ? "bg-red-500" :
+                state === "sync" ? "bg-amber-400 animate-pulse" :
+                "bg-emerald-500"
+            );
+        }
+    }
+
+    function updateNotificationUi() {
+        const supported = "Notification" in window;
+        const permission = supported ? Notification.permission : "unsupported";
+        alertsEnabled = supported && permission === "granted" && localStorage.getItem("adminPaymentAlerts") !== "off";
+
+        const text = document.getElementById("notification_button_text");
+        const badge = document.getElementById("notification_status_badge");
+        if (text) {
+            text.textContent = !supported ? "Alerts unsupported" :
+                permission === "denied" ? "Alerts blocked" :
+                alertsEnabled ? "Alerts on" : "Enable alerts";
+        }
+        if (badge) {
+            badge.textContent = !supported ? "Unsupported" :
+                permission === "denied" ? "Blocked in browser" :
+                alertsEnabled ? "Enabled" : "Off";
+            badge.className = "rounded-full px-3 py-1 text-xs font-bold " + (
+                alertsEnabled ? "bg-emerald-50 text-emerald-700" :
+                permission === "denied" ? "bg-red-50 text-red-700" :
+                "bg-slate-100 text-slate-700"
+            );
+        }
+    }
+
+    async function toggleBrowserNotifications() {
+        if (!("Notification" in window)) {
+            showToast("Notifications unavailable", "This browser does not support the Notification API.", "warning");
+            return;
+        }
+
+        if (Notification.permission === "granted") {
+            const currentlyOn = localStorage.getItem("adminPaymentAlerts") !== "off";
+            localStorage.setItem("adminPaymentAlerts", currentlyOn ? "off" : "on");
+            updateNotificationUi();
+            showToast("Browser alerts", currentlyOn ? "Alerts disabled on this device." : "Alerts enabled on this device.", "success");
+            if (!currentlyOn) unlockNotificationSound();
+            return;
+        }
+
+        if (Notification.permission === "denied") {
+            showToast("Notifications blocked", "Allow notifications for this site from your browser/site settings, then try again.", "warning");
+            return;
+        }
+
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                localStorage.setItem("adminPaymentAlerts", "on");
+                unlockNotificationSound();
+                showToast("Notifications enabled", "New UTR requests will alert this device while the dashboard session is active.", "success");
+            } else {
+                showToast("Notifications not enabled", "Browser permission was not granted.", "warning");
+            }
+        } catch (error) {
+            console.error("Notification permission failed:", error);
+            showToast("Notification error", "Could not enable browser notifications.", "error");
+        }
+        updateNotificationUi();
+    }
+
+    function unlockNotificationSound() {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            audioContext = audioContext || new AudioCtx();
+            if (audioContext.state === "suspended") audioContext.resume();
+        } catch (error) {
+            console.debug("Notification sound unavailable:", error);
+        }
+    }
+
+    function playNotificationSound() {
+        if (!alertsEnabled || !audioContext) return;
+        try {
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+            oscillator.frequency.value = 880;
+            gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.08, audioContext.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.22);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.24);
+        } catch (error) {
+            console.debug("Notification sound failed:", error);
+        }
+    }
+
+    function notifyNewPayment(payment) {
+        const name = payment.name || "A user";
+        const utr = payment.utr_number || "UTR submitted";
+        const message = `${name} ka UTR ${utr} received. Check it out.`;
+        showToast("New Payment Request", message, "warning", () => openPanel("payments"));
+        playNotificationSound();
+
+        if (alertsEnabled && "Notification" in window && Notification.permission === "granted") {
+            try {
+                const notification = new Notification("New Payment Request", {
+                    body: message,
+                    tag: `payment-${payment.payment_id}`,
+                    renotify: true
+                });
+                notification.onclick = () => {
+                    window.focus();
+                    openPanel("payments");
+                    notification.close();
+                };
+            } catch (error) {
+                console.debug("Browser notification failed:", error);
+            }
+        }
+    }
+
+    function setMessage(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        const classes = { success: "text-emerald-600", error: "text-red-600", info: "text-slate-600" };
+        element.textContent = message;
+        element.className = `text-sm font-medium ${classes[type] || classes.info}`;
+        element.classList.remove("hidden");
+    }
+
+    function setButtonBusy(button, busy, busyText, normalText) {
+        if (!button) return;
+        button.disabled = busy;
+        button.textContent = busy ? busyText : normalText;
+        button.classList.toggle("opacity-60", busy);
+        button.classList.toggle("cursor-not-allowed", busy);
+    }
+
+    function updateLiveStats(stats) {
+        if (!stats) return;
+        document.querySelectorAll("[data-live-stat]").forEach(element => {
+            const key = element.dataset.liveStat;
+            if (!(key in stats)) return;
+            element.textContent = key === "total_revenue" ? formatMoney(stats[key]) : String(stats[key] ?? 0);
+        });
+
+        const pending = Number(stats.pending_payments || 0);
+        const incomplete = Number(stats.incomplete_users || 0);
+        const pendingBadge = document.getElementById("sidebar_pending_badge");
+        const incompleteBadge = document.getElementById("sidebar_incomplete_badge");
+        if (pendingBadge) {
+            pendingBadge.textContent = String(pending);
+            pendingBadge.classList.toggle("hidden", pending === 0);
+        }
+        if (incompleteBadge) {
+            incompleteBadge.textContent = String(incomplete);
+            incompleteBadge.classList.toggle("hidden", incomplete === 0);
+        }
+        const overviewPending = document.getElementById("overview_pending_badge");
+        if (overviewPending) overviewPending.textContent = `${pending} pending`;
+        const incompleteHeader = document.getElementById("incomplete_badge");
+        if (incompleteHeader) incompleteHeader.textContent = `${incomplete} incomplete`;
+        const adminGenerated = document.getElementById("admin_generated_badge");
+        if (adminGenerated) adminGenerated.textContent = `${Number(stats.admin_generated || 0)} records`;
+    }
+
+    function updateFinancialYearDisplay(data) {
+        const fy = data.financial_year || "Not Selected";
+        const ay = data.assessment_year || "—";
+        const activeFy = document.getElementById("active_fy");
+        const activeAy = document.getElementById("active_ay");
+        const overviewFy = document.getElementById("overview_active_fy");
+        const overviewAy = document.getElementById("overview_active_ay");
+        const overviewBadge = document.getElementById("overview_fy_badge");
+        if (activeFy) activeFy.textContent = fy;
+        if (activeAy) activeAy.textContent = ay;
+        if (overviewFy) overviewFy.textContent = data.financial_year || "Not selected";
+        if (overviewAy) overviewAy.textContent = ay;
+        if (overviewBadge) overviewBadge.textContent = data.financial_year || "FY missing";
+    }
+
+    function paymentStatusBadge(status) {
+        if (status === "approved") return '<span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold">APPROVED</span>';
+        if (status === "rejected") return '<span class="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-full font-bold">REJECTED</span>';
+        return '<span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-bold">PENDING</span>';
+    }
+
+    function paymentActions(payment) {
+        if (payment.status !== "pending") return '<span class="text-xs text-slate-400">Completed</span>';
+        const id = encodeURIComponent(payment.payment_id || "");
+        return `
+            <form action="/admin/payment/approve/${id}" method="POST" class="inline live-payment-action" data-action="approve">
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-semibold">Approve</button>
+            </form>
+            <form action="/admin/payment/decline/${id}" method="POST" class="inline ml-1 live-payment-action" data-action="decline">
+                <button type="submit" class="bg-white hover:bg-red-50 text-red-600 border border-red-200 text-xs px-3 py-2 rounded-lg font-semibold">Decline</button>
+            </form>`;
+    }
+
+    function renderPayments(payments) {
+        const body = document.getElementById("payments_body");
+        if (!body) return;
+        const rows = (payments || []).map(payment => `
+            <tr class="payment-row hover:bg-slate-50/70" data-payment-id="${escapeHtml(payment.payment_id)}" data-status="${escapeHtml(payment.status || "pending")}">
+                <td class="p-4"><p class="text-sm font-semibold text-slate-900">${escapeHtml(payment.name || "Unknown Employee")}</p><p class="text-xs text-slate-400 font-mono mt-1">${escapeHtml(payment.pan || "N/A")}</p></td>
+                <td class="p-4"><p class="text-sm text-slate-700 break-all">${escapeHtml(payment.email || "—")}</p><p class="text-xs text-slate-500 mt-1">${escapeHtml(payment.mobile || "—")}</p></td>
+                <td class="p-4 text-sm font-bold text-slate-800">${formatMoney(payment.amount)}</td>
+                <td class="p-4 text-sm font-mono text-slate-700">${escapeHtml(payment.utr_number || "—")}</td>
+                <td class="p-4 text-xs text-slate-500 whitespace-nowrap">${escapeHtml(formatDateTime(payment.created_at))}</td>
+                <td class="p-4">${paymentStatusBadge(payment.status)}</td>
+                <td class="p-4 text-right whitespace-nowrap">${paymentActions(payment)}</td>
+            </tr>`).join("");
+        body.innerHTML = rows || '<tr class="payment-no-data"><td colspan="7" class="p-12 text-center text-slate-500 text-sm">No payment requests found.</td></tr>';
+        body.insertAdjacentHTML("beforeend", '<tr id="payment_filter_empty" class="hidden"><td colspan="7" class="p-12 text-center text-slate-500 text-sm">No payments in this status.</td></tr>');
+        applyPaymentFilter(activePaymentFilter);
+    }
+
+    function renderIncompleteApplications(items) {
+        const body = document.getElementById("incomplete_body");
+        if (!body) return;
+        const rows = (items || []).slice(0, 100).map(item => {
+            const progress = Math.min(Math.max(Number(item.progress_percent || 0), 0), 100);
+            const reminder = item.reminder_status || "not_eligible";
+            const reminderClass = reminder === "sent" ? "text-emerald-700" : reminder === "failed" ? "text-red-700" : reminder === "pending" ? "text-amber-700" : "text-slate-500";
+            return `
+                <tr class="hover:bg-slate-50/70">
+                    <td class="p-4"><p class="text-sm font-semibold text-slate-900">${escapeHtml(item.name || "Unknown / not captured")}</p><p class="text-[11px] text-slate-400 font-mono mt-1 max-w-48 truncate">${escapeHtml(item.user_id || item.session_id || "—")}</p></td>
+                    <td class="p-4 text-sm text-slate-700 break-all">${escapeHtml(item.email || "—")}</td>
+                    <td class="p-4 text-sm text-slate-700">${escapeHtml(item.mobile || "—")}</td>
+                    <td class="p-4"><p class="text-sm font-medium text-slate-700">${escapeHtml(titleCase(item.current_page || "unknown"))}</p><p class="text-xs text-slate-400 mt-1">${escapeHtml(titleCase(item.current_step || item.last_completed_step || "—"))}</p></td>
+                    <td class="p-4"><div class="w-28 bg-slate-200 rounded-full h-2 overflow-hidden"><div class="bg-prashasan-600 h-2 rounded-full" style="width:${progress}%"></div></div><p class="text-xs text-slate-500 mt-1">${progress}%</p></td>
+                    <td class="p-4"><span class="text-xs font-semibold px-2 py-1 rounded-full bg-slate-100 text-slate-700">${escapeHtml(String(item.payment_status || "not_started").replaceAll("_", " ").toUpperCase())}</span></td>
+                    <td class="p-4"><span class="text-xs font-medium ${reminderClass}">${escapeHtml(titleCase(reminder))}</span></td>
+                    <td class="p-4 text-xs text-slate-500 whitespace-nowrap">${escapeHtml(formatDateTime(item.last_seen_at))}</td>
+                </tr>`;
+        }).join("");
+        body.innerHTML = rows || '<tr><td colspan="8" class="p-12 text-center text-slate-500 text-sm">No incomplete applications found.</td></tr>';
+    }
+
+    function updatePaymentFilterLabels(payments, stats) {
+        const total = Array.isArray(payments) ? payments.length : 0;
+        const values = {
+            all: total,
+            pending: Number(stats.pending_payments || 0),
+            approved: Number(stats.approved_payments || 0),
+            rejected: Number(stats.rejected_payments || 0)
+        };
+        Object.entries(values).forEach(([key, value]) => {
+            const button = document.getElementById(`payment_filter_${key}`);
+            if (button) button.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)} (${value})`;
+        });
+    }
+
+    function processNewPayments(payments) {
+        const newlySeen = [];
+        for (const payment of payments || []) {
+            const id = String(payment.payment_id || "");
+            if (!id) continue;
+            if (!knownPaymentIds.has(id)) {
+                knownPaymentIds.add(id);
+                if (payment.status === "pending") newlySeen.push(payment);
+            }
+        }
+        if (!initialLiveSyncComplete) {
+            initialLiveSyncComplete = true;
+            return;
+        }
+        newlySeen.reverse().forEach(notifyNewPayment);
+    }
+
+    async function syncLiveDashboard(showFeedback = false) {
+        if (liveSyncInFlight) return;
+        liveSyncInFlight = true;
+        setLiveStatus("Syncing…", "sync");
+        const button = document.getElementById("manual_refresh_button");
+        if (showFeedback && button) button.classList.add("opacity-60");
+
+        try {
+            const response = await fetch("/api/admin/dashboard/live", {
+                method: "GET",
+                headers: { "Accept": "application/json" },
+                cache: "no-store",
+                credentials: "same-origin"
+            });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = "/admin";
+                return;
+            }
+            if (!response.ok) throw new Error(`Live sync failed (${response.status})`);
+            const data = await response.json();
+
+            processNewPayments(data.payments || []);
+            updateLiveStats(data.stats || {});
+            updateFinancialYearDisplay(data);
+            updatePaymentFilterLabels(data.payments || [], data.stats || {});
+            renderPayments(data.payments || []);
+            renderIncompleteApplications(data.incomplete_users || []);
+            setLiveStatus("Live · 4s", "ok");
+            if (showFeedback) showToast("Dashboard synced", "Latest payment and application data loaded.", "success");
+        } catch (error) {
+            console.error("Admin live sync failed:", error);
+            setLiveStatus("Sync issue", "error");
+            if (showFeedback) showToast("Sync failed", "Could not load the latest dashboard data. Existing page data is unchanged.", "error");
+        } finally {
+            liveSyncInFlight = false;
+            if (showFeedback && button) button.classList.remove("opacity-60");
+        }
+    }
+
+    function scheduleLiveSync() {
+        clearInterval(liveSyncTimer);
+        liveSyncTimer = setInterval(() => syncLiveDashboard(false), LIVE_SYNC_MS);
+    }
+
+    function manualRefresh() {
+        syncLiveDashboard(true);
+    }
+
+    async function saveFinancialYear() {
+        const select = document.getElementById("financial_year");
+        const button = document.getElementById("save_fy_button");
+        const financialYear = select.value.trim();
+        if (!financialYear) { setMessage("fy_message", "Please select a Financial Year.", "error"); return; }
+        setButtonBusy(button, true, "Saving...", "Save");
+        try {
+            const response = await fetch("/api/admin/financial-year", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ financial_year: financialYear }) });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.detail || "Financial Year could not be saved.");
+            document.getElementById("active_fy").textContent = result.financial_year;
+            document.getElementById("active_ay").textContent = result.assessment_year;
+            const overviewFy = document.getElementById("overview_active_fy");
+            const overviewAy = document.getElementById("overview_active_ay");
+            const overviewBadge = document.getElementById("overview_fy_badge");
+            if (overviewFy) overviewFy.textContent = result.financial_year;
+            if (overviewAy) overviewAy.textContent = result.assessment_year;
+            if (overviewBadge) overviewBadge.textContent = result.financial_year;
+            setMessage("fy_message", "Financial Year saved successfully.", "success");
+            showToast("Financial Year saved", `${result.financial_year} / AY ${result.assessment_year}`, "success");
+        } catch (error) {
+            console.error("Financial Year save failed:", error);
+            setMessage("fy_message", "Error: " + error.message, "error");
+        } finally { setButtonBusy(button, false, "Saving...", "Save"); }
+    }
+
+    async function saveAdminSettings() {
+        const button = document.getElementById("save_settings_button");
+        const feeRaw = document.getElementById("fee_amount").value.trim();
+        const feeAmount = Number(feeRaw);
+        if (!Number.isFinite(feeAmount) || feeAmount < 0) { setMessage("settings_message", "Enter a valid processing fee.", "error"); return; }
+        setButtonBusy(button, true, "Saving...", "Save Current Settings");
+        try {
+            const response = await fetch("/api/admin/settings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    fee_amount: feeAmount,
+                    upi_id: document.getElementById("upi_id").value.trim(),
+                    telegram_bot_token: document.getElementById("telegram_bot_token").value.trim(),
+                    telegram_chat_id: document.getElementById("telegram_chat_id").value.trim()
+                })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.detail || "Settings could not be saved.");
+            settingsDirty = false;
+            setMessage("settings_message", "Saved successfully.", "success");
+            showToast("Settings saved", "Fee, UPI and Telegram settings were saved.", "success");
+        } catch (error) {
+            console.error("Admin settings save failed:", error);
+            setMessage("settings_message", "Error: " + error.message, "error");
+        } finally { setButtonBusy(button, false, "Saving...", "Save Current Settings"); }
+    }
+
+    function confirmPaymentAction(form, action) {
+        const verb = action === "approve" ? "approve" : "decline";
+        if (!window.confirm(`Are you sure you want to ${verb} this payment?`)) return false;
+        form.querySelectorAll("button").forEach(button => { button.disabled = true; button.classList.add("opacity-60", "cursor-not-allowed"); });
+        return true;
+    }
+
+    async function submitPaymentAction(form) {
+        const action = form.dataset.action || (form.action.includes("/approve/") ? "approve" : "decline");
+        if (!confirmPaymentAction(form, action)) return;
+        try {
+            const response = await fetch(form.action, { method: "POST", credentials: "same-origin", headers: {"x-csrf-token": "{{ csrf_token }}"} });
+            if (!response.ok) throw new Error(`Payment ${action} failed (${response.status})`);
+            showToast("Payment updated", `Payment ${action === "approve" ? "approved" : "declined"} successfully.`, "success");
+            await syncLiveDashboard(false);
+        } catch (error) {
+            console.error("Payment action failed:", error);
+            showToast("Payment update failed", error.message, "error");
+            form.querySelectorAll("button").forEach(button => { button.disabled = false; button.classList.remove("opacity-60", "cursor-not-allowed"); });
+        }
+    }
+
+    function prepareAdminGenerateForm() {
+        const select = document.getElementById("admin_employee");
+        const form = document.getElementById("admin_generate_form");
+        const userId = select.value.trim();
+        if (!userId) { alert("Please select an employee."); return false; }
+        const activeFy = document.getElementById("active_fy").textContent.trim();
+        if (!activeFy || activeFy === "Not Selected") { alert("Please select and save the Financial Year first."); openPanel("settings"); return false; }
+        if (!window.confirm("Generate Form 16 directly for this employee without payment verification?")) return false;
+        form.action = `/admin/form16/generate/${encodeURIComponent(userId)}`;
+        return true;
+    }
+
+    function applyPaymentFilter(filter) {
+        activePaymentFilter = ["all", "pending", "approved", "rejected"].includes(filter) ? filter : "all";
+        sessionStorage.setItem("adminPaymentFilter", activePaymentFilter);
+        const rows = document.querySelectorAll(".payment-row");
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const visible = activePaymentFilter === "all" || row.dataset.status === activePaymentFilter;
+            row.classList.toggle("hidden", !visible);
+            if (visible) visibleCount += 1;
+        });
+        const empty = document.getElementById("payment_filter_empty");
+        if (empty) empty.classList.toggle("hidden", visibleCount !== 0);
+        document.querySelectorAll(".payment-filter").forEach(button => {
+            const active = button.dataset.filter === activePaymentFilter;
+            button.classList.toggle("bg-slate-900", active);
+            button.classList.toggle("text-white", active);
+            button.classList.toggle("bg-white", !active);
+            button.classList.toggle("text-slate-600", !active);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".admin-nav").forEach(button => button.addEventListener("click", () => openPanel(button.dataset.navTarget)));
+        document.querySelectorAll(".admin-setting").forEach(element => element.addEventListener("input", () => { settingsDirty = true; }));
+        document.querySelectorAll(".payment-filter").forEach(button => button.addEventListener("click", () => applyPaymentFilter(button.dataset.filter)));
+
+        document.getElementById("payments_body")?.addEventListener("submit", event => {
+            const form = event.target.closest("form");
+            if (!form || !form.action || (!form.action.includes("/admin/payment/approve/") && !form.action.includes("/admin/payment/decline/"))) return;
+            event.preventDefault();
+            submitPaymentAction(form);
+        });
+
+        applyPaymentFilter(activePaymentFilter);
+        openPanel(sessionStorage.getItem("adminActivePanel") || "overview");
+        updateNotificationUi();
+        if (alertsEnabled) unlockNotificationSound();
+        initialLiveSyncComplete = true;
+        syncLiveDashboard(false);
+        scheduleLiveSync();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) syncLiveDashboard(false);
+    });
+
+    window.addEventListener("online", () => syncLiveDashboard(false));
+    window.addEventListener("offline", () => setLiveStatus("Offline", "error"));
+
+    window.addEventListener("beforeunload", event => {
+        if (!settingsDirty) return;
+        event.preventDefault();
+        event.returnValue = "";
+    });
+
+
+    let adminExtractedSlips = [];
+    let adminArrearAllocations = {};
+
+    async function loadIntegrationStatus() {
+        try {
+            const response = await fetch('/api/admin/integrations/status');
+            if (!response.ok) return;
+            const data = await response.json();
+            const email = data.email || {}, rz = data.razorpay || {};
+            document.getElementById('email_host').value = email.host || 'smtp.gmail.com';
+            document.getElementById('email_port').value = email.port || 587;
+            document.getElementById('email_from_name').value = email.from_name || 'Form 16 Support';
+            document.getElementById('rz_enabled').checked = !!rz.enabled;
+            document.getElementById('rz_mode').value = rz.mode || 'test';
+            document.getElementById('rz_key_id').value = rz.key_id || '';
+            const badge=document.getElementById('razorpay_badge'); if(badge) badge.textContent=rz.enabled?'Enabled':'Disabled';
+        } catch (_) {}
+    }
+
+    async function saveEmailIntegration() {
+        const payload={host:document.getElementById('email_host').value.trim(),port:Number(document.getElementById('email_port').value||587),from_name:document.getElementById('email_from_name').value.trim(),username:document.getElementById('email_username').value.trim(),password:document.getElementById('email_password').value};
+        if(!payload.username){showToast('Email','Enter sender email/username.','warning');return;}
+        const r=await fetch('/api/admin/integrations/email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json();
+        if(!r.ok){showToast('Email settings',d.detail||'Save failed','error');return;} document.getElementById('email_password').value=''; showToast('Email settings','Saved securely.','success'); loadIntegrationStatus();
+    }
+
+    async function sendTestEmail(){const recipient=document.getElementById('email_test_recipient').value.trim(); if(!recipient){showToast('Test email','Enter a recipient.','warning');return;} const r=await fetch('/api/admin/integrations/email/test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recipient})}); const d=await r.json(); showToast('Test email',r.ok?d.message:(d.detail||'Failed'),r.ok?'success':'error');}
+
+    async function saveRazorpayIntegration(){const payload={enabled:document.getElementById('rz_enabled').checked,mode:document.getElementById('rz_mode').value,key_id:document.getElementById('rz_key_id').value.trim(),key_secret:document.getElementById('rz_key_secret').value,webhook_secret:document.getElementById('rz_webhook_secret').value}; const r=await fetch('/api/admin/integrations/razorpay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(!r.ok){showToast('Razorpay',d.detail||'Save failed','error');return;} document.getElementById('rz_key_secret').value='';document.getElementById('rz_webhook_secret').value='';showToast('Razorpay','Settings saved securely.','success');loadIntegrationStatus();}
+
+    document.getElementById('ag_slips').addEventListener('change', async function(){
+        adminExtractedSlips=[]; adminArrearAllocations={}; const status=document.getElementById('ag_extract_status'); status.textContent='Extracting salary slips…';
+        try { for(const file of Array.from(this.files||[])){const fd=new FormData();fd.append('file',file);const r=await fetch('/api/extract',{method:'POST',body:fd});const d=await r.json();if(!r.ok)throw new Error(d.detail||`Could not parse ${file.name}`);adminExtractedSlips.push(...(d.data||[]));}
+            if(!adminExtractedSlips.length)throw new Error('No salary slips were extracted.'); const first=adminExtractedSlips[0]||{}; document.getElementById('ag_name').value=first.employee_name||'';document.getElementById('ag_pan').value=first.pan_no||'';
+            const arrears=[]; adminExtractedSlips.forEach((slip,i)=>{const p=slip.period||{};if(p.is_arrear||String(p.raw||'').toLowerCase().includes('arrear')) arrears.push(i);});
+            const box=document.getElementById('ag_arrear_box'); box.innerHTML=''; box.classList.toggle('hidden',!arrears.length); arrears.forEach(i=>{const row=document.createElement('div');row.className='grid grid-cols-3 gap-2 items-center mt-2';row.innerHTML=`<span>Arrear #${i+1}</span><input type="number" min="1" max="12" placeholder="Payment month" class="border rounded-lg px-2 py-1" data-arrear-month="${i}"><input type="number" min="1900" max="2200" placeholder="Payment year" class="border rounded-lg px-2 py-1" data-arrear-year="${i}">`;box.appendChild(row);});
+            status.textContent=`${adminExtractedSlips.length} salary-slip record(s) extracted. Review fields before generating.`;
+        } catch(e){status.textContent='Error: '+e.message;adminExtractedSlips=[];}
+    });
+
+    async function adminCreateAndGenerate(){
+        if(!adminExtractedSlips.length){showToast('Admin generator','Upload and extract salary slips first.','warning');return;}
+        adminArrearAllocations={}; document.querySelectorAll('[data-arrear-month]').forEach(el=>{const i=el.dataset.arrearMonth;adminArrearAllocations[i]={month:Number(el.value),year:Number(document.querySelector(`[data-arrear-year="${i}"]`).value)};});
+        const val=id=>document.getElementById(id).value.trim(); const payload={name:val('ag_name'),pan:val('ag_pan'),email:val('ag_email'),mobile:val('ag_mobile')||null,office_school_name:val('ag_office'),tan:val('ag_tan'),officer_name:val('ag_officer'),officer_father_name:val('ag_officer_father'),employer_name:val('ag_employer'),employer_address:val('ag_employer_address'),designation:val('ag_designation'),employer_pan:val('ag_employer_pan')||null,slips:adminExtractedSlips,arrear_allocations:adminArrearAllocations};
+        const btn=document.getElementById('ag_generate_btn');btn.disabled=true;btn.textContent='Generating…';try{const r=await fetch('/api/admin/form16/create-and-generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Generation failed.');showToast('Form 16',d.message,'success');window.open(d.download_url,'_blank');setTimeout(()=>syncDashboard(true),800);}catch(e){showToast('Admin generator',e.message,'error');}finally{btn.disabled=false;btn.textContent='Generate PDF & Email Employee';}
+    }
+
+    loadIntegrationStatus();
+</script>
+</body>
+</html>

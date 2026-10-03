@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
+  <h1 class="text-3xl font-bold text-slate-900">VetanKosh Privacy Notice</h1>
+  <p class="mt-2 text-sm text-slate-500">Version 2.1 · Last updated: 1 October 2026</p>
+  <p class="mt-5 text-slate-600 leading-7">VetanKosh is an independent private software service that helps users process salary-slip information, review salary and tax data, and prepare Form-16 working documents. This notice explains what personal data we process, why we process it, how it is protected, and the choices available to users.</p>
+
+  <h2 class="text-xl font-bold mt-7">1. Information we process</h2>
+  <p class="mt-2 text-slate-600 leading-7">Depending on the service you use, VetanKosh may process your name, email address, mobile number, PAN, salary-slip PDFs and information extracted from them, salary and deduction details, employer/DDO information, TAN and related records, financial year, payment reference/UTR or gateway transaction identifiers, generated-document records, delivery status, and limited technical/security logs needed to operate and protect the service.</p>
+
+  <h2 class="text-xl font-bold mt-7">2. Why we use this information</h2>
+  <p class="mt-2 text-slate-600 leading-7">We use submitted information only for defined service and operational purposes: receiving and parsing salary slips; showing extracted information for review; preparing salary/tax calculations; maintaining the monthly ledger; preparing the requested Form-16 workflow/document; processing or verifying payment; sending OTPs, service messages and generated documents; handling correction/refund requests; preventing misuse; troubleshooting; maintaining audit records; and meeting applicable legal, accounting or security obligations.</p>
+
+  <h2 class="text-xl font-bold mt-7">3. User review and accuracy</h2>
+  <p class="mt-2 text-slate-600 leading-7">Automated extraction can occasionally misread a source PDF. Users should review extracted salary, PAN/TAN, employer and deduction information before final generation. If a delivered report appears incorrect, the user may request an administrator-assisted correction or, where eligible under the Refund & Correction Policy, request a refund.</p>
+
+  <h2 class="text-xl font-bold mt-7">4. Payments and credentials</h2>
+  <p class="mt-2 text-slate-600 leading-7">VetanKosh does not ask users to enter a UPI PIN, ATM/card PIN, card CVV, internet-banking password, email password or OTP into support messages. Where a payment gateway is used, sensitive payment authentication is handled by that provider. VetanKosh may retain the payment status and transaction/reference identifiers needed for reconciliation, support and audit.</p>
+
+  <h2 class="text-xl font-bold mt-7">5. Service providers and disclosure</h2>
+  <p class="mt-2 text-slate-600 leading-7">Data may be processed by infrastructure, database, email, payment, backup or other service providers only as needed to operate VetanKosh. We do not sell salary-slip, PAN or contact data to advertisers. Information may also be disclosed when required by applicable law or a valid legal process.</p>
+
+  <h2 class="text-xl font-bold mt-7">6. Security</h2>
+  <p class="mt-2 text-slate-600 leading-7">VetanKosh uses technical and organisational safeguards designed to reduce unauthorised access or disclosure, including HTTPS in production, restricted administrator access, secure session controls, rate limiting, access logging, private document storage, integrity checks, backups and separation of application secrets from ordinary user records. No internet service can promise absolute security, so security controls are reviewed as the service evolves.</p>
+
+  <h2 class="text-xl font-bold mt-7">7. Retention, temporary files and deletion</h2>
+  <p class="mt-2 text-slate-600 leading-7">VetanKosh follows data-minimisation rules. The uploaded salary-slip PDF is written only to a temporary processing file and is deleted after the extraction request finishes, including when processing fails. Extracted salary data may be held temporarily in the browser during the review step; the application removes that browser copy after the ledger is saved and the user continues, and browser session storage also ends with the browser session. The server keeps the structured salary ledger, employee/DDO information, payment/audit records and generated documents needed to provide the requested service, support correction/refund requests, preserve document history, prevent fraud and meet applicable accounting, tax or legal obligations. VetanKosh does not claim a fixed legal retention period where the applicable obligation depends on the record and circumstances. A user may contact VetanKosh to request access, correction or deletion; data that is not required to be retained for an applicable legal, transaction, security or dispute purpose should be deleted or anonymised after the request is verified.</p>
+
+  <h2 class="text-xl font-bold mt-7">8. Access control and data isolation</h2>
+  <p class="mt-2 text-slate-600 leading-7">In-progress customer records are bound server-side to an HttpOnly workflow session; a user ID supplied in a URL is not treated as proof of ownership. Returning-user document access requires OTP verification and short-lived signed access, and payment-linked document downloads use signed expiring access tokens. Shared employer/TAN cache records cannot be overwritten by an ordinary customer workflow once they already exist.</p>
+
+  <h2 class="text-xl font-bold mt-7">9. Consent and choices</h2>
+  <p class="mt-2 text-slate-600 leading-7">Where processing relies on the user's consent, the user may withdraw that consent for future optional processing through the available service/contact channel. Withdrawal does not require deletion of records that VetanKosh must lawfully retain for completed transactions, security, dispute handling or other applicable obligations.</p>
+
+  <h2 class="text-xl font-bold mt-7">10. Children and account responsibility</h2>
+  <p class="mt-2 text-slate-600 leading-7">VetanKosh is intended for salary/tax-document workflows. Where applicable law requires parental or guardian involvement for a child's personal data or contractual/payment activity, the required verifiable consent or adult involvement must be obtained before such processing or transaction is undertaken.</p>
+
+  <h2 class="text-xl font-bold mt-7">11. Independent-service notice</h2>
+  <p class="mt-2 text-slate-600 leading-7">VetanKosh is not the Income Tax Department, TRACES, a Government of India website, or another government/statutory portal. It assists with data preparation and document workflow and must not be treated as independently issuing a government-authenticated TRACES certificate.</p>
+
+  <h2 class="text-xl font-bold mt-7">12. Questions, corrections and grievances</h2>
+  <p class="mt-2 text-slate-600 leading-7">For a privacy question, correction/deletion request, service complaint or grievance, use the support details published on the VetanKosh Contact page. Please do not send passwords, OTPs, UPI PINs or card credentials.</p>
+
+  <p class="mt-8 text-xs text-slate-400">This notice is designed to be clear and practical. It should be reviewed whenever VetanKosh changes its data practices, service providers or applicable legal obligations.</p>
+</div>
+{% endblock %}

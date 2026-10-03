@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
+  <h1 class="text-3xl font-bold text-slate-900">Correction & Refund Policy</h1>
+  <p class="mt-2 text-sm text-slate-500">Version 2.0 · Last updated: 1 October 2026</p>
+  <div class="mt-6 rounded-lg bg-slate-50 border border-slate-200 p-4 text-slate-700 leading-7">
+    If the Form-16 working report delivered by VetanKosh appears incorrect, you have <strong>two choices</strong>: ask the administrator to review and correct the report, or request a refund where the error is attributable to the VetanKosh service and the request is eligible under this policy.
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4 mt-6">
+    <section class="border rounded-xl p-5"><h2 class="text-xl font-bold">Option 1 — Get it corrected</h2><p class="mt-2 text-slate-600 leading-7">Choose this if you still want the Form-16 report. Tell us what appears wrong. The administrator will review the generated report against the information available in your VetanKosh workflow and, where appropriate, correct the data/workflow and generate a revised version without charging again for that correction.</p></section>
+    <section class="border rounded-xl p-5"><h2 class="text-xl font-bold">Option 2 — Request a refund</h2><p class="mt-2 text-slate-600 leading-7">Choose this if you do not want a corrected report. The administrator will review the issue. If the delivered report is materially incorrect because of a VetanKosh processing/generation error and the request is approved, the eligible service payment will be refunded through the applicable payment method/process.</p></section>
+  </div>
+
+  <h2 class="text-xl font-bold mt-7">What is generally eligible?</h2>
+  <p class="mt-2 text-slate-600 leading-7">Examples include a material error introduced by VetanKosh during extraction, calculation or document generation despite the user having supplied/reviewed correct source information, or a technical generation problem that results in an unusable delivered report and cannot reasonably be corrected.</p>
+
+  <h2 class="text-xl font-bold mt-7">What is generally not a service-error refund?</h2>
+  <p class="mt-2 text-slate-600 leading-7">A refund is not automatic merely because source salary slips, PAN/TAN, employer details or other information supplied/confirmed by the user were themselves incomplete or incorrect; because the user later changes information after a correct report was generated; or because the user expected VetanKosh to act as the official TRACES/government issuing portal. We will still try to help correct genuine data-entry or source-document issues where practical.</p>
+
+  <h2 class="text-xl font-bold mt-7">How review works</h2>
+  <p class="mt-2 text-slate-600 leading-7">Submit the payment/reference ID, choose correction or refund, and explain the problem clearly. VetanKosh records the request for administrator review. A refund is not issued automatically by the website; approval follows verification of the generated report, relevant source information and payment record. Approved refunds are initiated through the applicable payment channel, and the time for the amount to appear can depend on the bank/payment provider.</p>
+
+  <h2 class="text-xl font-bold mt-7">Submit a correction/refund request</h2>
+  <form id="refundForm" class="mt-4 space-y-4">
+    <div><label class="font-semibold">Payment ID / reference</label><input id="paymentId" required maxlength="100" class="mt-1 w-full border rounded-lg p-3" placeholder="Enter the VetanKosh payment ID"></div>
+    <div><label class="font-semibold">Email used with VetanKosh</label><input id="email" type="email" required maxlength="254" class="mt-1 w-full border rounded-lg p-3" placeholder="you@example.com"></div>
+    <div><label class="font-semibold">Choose one option</label><select id="requestType" class="mt-1 w-full border rounded-lg p-3"><option value="correction">Correct my Form-16 report</option><option value="refund">Request refund</option></select></div>
+    <div><label class="font-semibold">What is wrong?</label><textarea id="reason" required minlength="10" maxlength="2000" rows="5" class="mt-1 w-full border rounded-lg p-3" placeholder="Describe the incorrect value/page and what you expected."></textarea></div>
+    <button class="bg-slate-900 text-white rounded-lg px-5 py-3 font-semibold" type="submit">Submit for admin review</button>
+    <p id="result" class="text-sm"></p>
+  </form>
+  <p class="mt-6 text-sm text-slate-500">Support: {{ support_email if support_email else 'Use the contact details published on the live VetanKosh site.' }} Never share OTPs, passwords, UPI PINs or card credentials.</p>
+</div>
+<script>
+document.getElementById('refundForm').addEventListener('submit', async (e) => {
+  e.preventDefault(); const result=document.getElementById('result'); result.textContent='Submitting…';
+  try {
+    const r=await fetch('/api/refund/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({payment_id:document.getElementById('paymentId').value.trim(),email:document.getElementById('email').value.trim(),request_type:document.getElementById('requestType').value,reason:document.getElementById('reason').value.trim()})});
+    const d=await r.json(); result.textContent=d.message || d.detail || 'Request submitted.'; result.className=r.ok?'text-sm text-green-700':'text-sm text-red-700';
+  } catch (_) { result.textContent='Could not submit the request. Please contact support.'; result.className='text-sm text-red-700'; }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,914 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="p-6 border-b border-slate-100 bg-slate-50">
+        <h2 class="text-xl font-semibold text-slate-800">
+            Employer / DDO Details
+        </h2>
+        <p class="text-sm text-slate-500 mt-1">
+            Enter the DDO TAN. If the TAN already exists in our records,
+            the saved DDO details will be filled automatically.
+        </p>
+    </div>
+
+    <div class="p-6">
+        <div
+            id="employee_summary"
+            class="hidden mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4"
+        >
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                <div>
+                    <p class="text-xs uppercase tracking-wide text-slate-500">
+                        Employee
+                    </p>
+                    <p
+                        id="summary_name"
+                        class="font-semibold text-slate-800"
+                    >
+                        —
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs uppercase tracking-wide text-slate-500">
+                        PAN
+                    </p>
+                    <p
+                        id="summary_pan"
+                        class="font-mono font-semibold text-slate-800"
+                    >
+                        —
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs uppercase tracking-wide text-slate-500">
+                        Email
+                    </p>
+                    <p
+                        id="summary_email"
+                        class="font-medium text-slate-800 break-all"
+                    >
+                        —
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <h3
+            class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4 border-b pb-2"
+        >
+            Employer / DDO Information
+        </h3>
+
+        <div class="mb-6">
+            <label
+                for="tan_number"
+                class="block text-sm font-medium text-slate-700 mb-1"
+            >
+                DDO TAN Number
+                <span class="text-red-500">*</span>
+            </label>
+
+            <div class="relative max-w-sm">
+                <input
+                    type="text"
+                    id="tan_number"
+                    maxlength="10"
+                    autocomplete="off"
+                    placeholder="10-character TAN"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:border-prashasan-base focus:ring-1 focus:ring-prashasan-base uppercase font-mono"
+                >
+                <div
+                    id="tan_status_icon"
+                    class="absolute right-3 top-2.5 hidden"
+                    aria-hidden="true"
+                ></div>
+            </div>
+
+            <p
+                id="tan_message"
+                class="text-xs text-slate-500 mt-1"
+            >
+                Enter the 10-character TAN to check saved DDO details.
+            </p>
+        </div>
+
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-lg border border-slate-200"
+            id="ddo_form_area"
+        >
+            <div>
+                <label
+                    for="officer_name"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                >
+                    DDO Officer Name
+                    <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="officer_name"
+                    autocomplete="name"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-prashasan-base focus:ring-1 focus:ring-prashasan-base"
+                >
+            </div>
+
+            <div>
+                <label
+                    for="officer_father_name"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                >
+                    Officer Father Name
+                </label>
+                <input
+                    type="text"
+                    id="officer_father_name"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-prashasan-base focus:ring-1 focus:ring-prashasan-base"
+                >
+            </div>
+
+            <div>
+                <label
+                    for="employer_name"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                >
+                    Employer / DDO Center Name
+                    <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="employer_name"
+                    placeholder="e.g. K.B. +2 High School, Arki"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-prashasan-base focus:ring-1 focus:ring-prashasan-base"
+                >
+            </div>
+
+            <div>
+                <label
+                    for="designation"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                >
+                    Designation
+                    <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="designation"
+                    placeholder="e.g. Headmaster"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-prashasan-base focus:ring-1 focus:ring-prashasan-base"
+                >
+            </div>
+
+            <div class="md:col-span-2">
+                <label
+                    for="employer_address"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                >
+                    Full Employer Address
+                    <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="employer_address"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-prashasan-base focus:ring-1 focus:ring-prashasan-base"
+                >
+            </div>
+
+            <div class="md:col-span-2"><label for="cit_tds_address" class="block text-sm font-medium text-slate-700 mb-1">CIT (TDS) Address <span class="text-red-500">*</span></label><input type="text" id="cit_tds_address" class="w-full border border-slate-300 rounded-lg px-4 py-2"></div>
+            <div><label for="cit_tds_city" class="block text-sm font-medium text-slate-700 mb-1">CIT (TDS) City <span class="text-red-500">*</span></label><input type="text" id="cit_tds_city" class="w-full border border-slate-300 rounded-lg px-4 py-2"></div>
+            <div><label for="cit_tds_pincode" class="block text-sm font-medium text-slate-700 mb-1">CIT (TDS) PIN <span class="text-red-500">*</span></label><input type="text" id="cit_tds_pincode" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" class="w-full border border-slate-300 rounded-lg px-4 py-2"></div>
+
+            <div>
+                <label
+                    for="employer_pan"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                >
+                    Employer PAN
+                    <span class="text-slate-400 font-normal">
+                        (Optional)
+                    </span>
+                </label>
+                <input
+                    type="text"
+                    id="employer_pan"
+                    maxlength="10"
+                    autocomplete="off"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-prashasan-base focus:ring-1 focus:ring-prashasan-base uppercase font-mono"
+                >
+            </div>
+        </div>
+
+        <div
+            id="save_message"
+            class="hidden mt-4 rounded-lg border px-4 py-3 text-sm"
+            role="status"
+        ></div>
+
+        <div
+            class="mt-8 pt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row gap-3 justify-between items-stretch sm:items-center"
+        >
+            <button
+                type="button"
+                id="back_button"
+                class="text-slate-500 font-medium hover:text-slate-800 transition-colors px-3 py-2"
+            >
+                &larr; Back to Review
+            </button>
+
+            <button
+                type="button"
+                id="payment_button"
+                onclick="proceedToPayment(event)"
+                class="btn"
+            >
+                Proceed to Payment
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const USER_ID = "{{ user_id | default('', true) | e }}";
+    const DDO_DRAFT_KEY = `form16_ddo_draft_${USER_ID || "unknown"}`;
+
+    const fieldIds = [
+        "tan_number",
+        "officer_name",
+        "officer_father_name",
+        "employer_name",
+        "designation",
+        "employer_address",
+        "cit_tds_address",
+        "cit_tds_city",
+        "cit_tds_pincode",
+        "employer_pan"
+    ];
+
+    let progressTimer = null;
+    let tanLookupTimer = null;
+    let employeeRecord = null;
+
+    function getField(id) {
+        return document.getElementById(id);
+    }
+
+    function cleanUpper(value) {
+        return (value || "").trim().toUpperCase();
+    }
+
+    function setTanStatus(icon, message, tone = "neutral") {
+        const statusIcon = getField("tan_status_icon");
+        const messageEl = getField("tan_message");
+
+        statusIcon.textContent = icon || "";
+        statusIcon.classList.toggle("hidden", !icon);
+
+        const toneClasses = {
+            neutral: "text-slate-500",
+            success: "text-emerald-600",
+            warning: "text-amber-600",
+            error: "text-red-600"
+        };
+
+        messageEl.className =
+            `text-xs mt-1 ${toneClasses[tone] || toneClasses.neutral}`;
+        messageEl.textContent = message;
+    }
+
+    function showMessage(message, type = "error") {
+        const box = getField("save_message");
+
+        const styles = {
+            error: "border-red-200 bg-red-50 text-red-700",
+            success: "border-emerald-200 bg-emerald-50 text-emerald-700",
+            info: "border-slate-200 bg-slate-50 text-slate-700"
+        };
+
+        box.className =
+            `mt-4 rounded-lg border px-4 py-3 text-sm ${
+                styles[type] || styles.info
+            }`;
+
+        box.textContent = message;
+        box.classList.remove("hidden");
+    }
+
+    function hideMessage() {
+        getField("save_message").classList.add("hidden");
+    }
+
+    function collectDraft() {
+        return {
+            tan: cleanUpper(getField("tan_number").value),
+            officer_name: getField("officer_name").value.trim(),
+            officer_father_name:
+                getField("officer_father_name").value.trim(),
+            employer_name: getField("employer_name").value.trim(),
+            designation: getField("designation").value.trim(),
+            employer_address:
+                getField("employer_address").value.trim(),
+            pan: cleanUpper(getField("employer_pan").value),
+            cit_tds_address: getField("cit_tds_address").value.trim(),
+            cit_tds_city: getField("cit_tds_city").value.trim(),
+            cit_tds_pincode: getField("cit_tds_pincode").value.trim()
+        };
+    }
+
+    function saveLocalDraft() {
+        if (!USER_ID) {
+            return;
+        }
+
+        try {
+            sessionStorage.setItem(
+                DDO_DRAFT_KEY,
+                JSON.stringify(collectDraft())
+            );
+        } catch (error) {
+            console.warn("Could not save DDO draft locally:", error);
+        }
+    }
+
+    function restoreLocalDraft() {
+        if (!USER_ID) {
+            return false;
+        }
+
+        try {
+            const raw = sessionStorage.getItem(DDO_DRAFT_KEY);
+
+            if (!raw) {
+                return false;
+            }
+
+            const draft = JSON.parse(raw);
+
+            getField("tan_number").value = draft.tan || "";
+            getField("officer_name").value =
+                draft.officer_name || "";
+            getField("officer_father_name").value =
+                draft.officer_father_name || "";
+            getField("employer_name").value =
+                draft.employer_name || "";
+            getField("designation").value =
+                draft.designation || "";
+            getField("employer_address").value =
+                draft.employer_address || "";
+            getField("cit_tds_address").value = draft.cit_tds_address || "";
+            getField("cit_tds_city").value = draft.cit_tds_city || "";
+            getField("cit_tds_pincode").value = draft.cit_tds_pincode || "";
+            getField("employer_pan").value =
+                draft.pan || "";
+
+            return true;
+
+        } catch (error) {
+            console.warn("Could not restore DDO draft:", error);
+            return false;
+        }
+    }
+
+    async function loadEmployee() {
+        if (!USER_ID) {
+            showMessage(
+                "User ID is missing. Please return to the upload step.",
+                "error"
+            );
+            return null;
+        }
+
+        try {
+            const response = await fetch(
+                `/api/employee/${encodeURIComponent(USER_ID)}`,
+                {
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Employee details were not found."
+                );
+            }
+
+            employeeRecord = data;
+
+            getField("summary_name").textContent =
+                data.name || "—";
+            getField("summary_pan").textContent =
+                data.pan || "—";
+            getField("summary_email").textContent =
+                data.email || "—";
+
+            getField("employee_summary").classList.remove("hidden");
+
+            return data;
+
+        } catch (error) {
+            console.error("Employee load failed:", error);
+            showMessage(
+                "Employee details could not be loaded: " +
+                error.message,
+                "error"
+            );
+            return null;
+        }
+    }
+
+    function populateEmployer(data) {
+        getField("officer_name").value =
+            data.officer_name || "";
+        getField("officer_father_name").value =
+            data.officer_father_name || "";
+        getField("employer_name").value =
+            data.employer_name || "";
+        getField("designation").value =
+            data.designation || "";
+        getField("employer_address").value =
+            data.employer_address || "";
+        getField("cit_tds_address").value = data.cit_tds_address || "";
+        getField("cit_tds_city").value = data.cit_tds_city || "";
+        getField("cit_tds_pincode").value = data.cit_tds_pincode || "";
+        getField("employer_pan").value =
+            data.pan || "";
+
+        saveLocalDraft();
+    }
+
+    async function lookupTan(tanValue) {
+        const tan = cleanUpper(tanValue);
+
+        getField("tan_number").value = tan;
+
+        if (!tan) {
+            setTanStatus(
+                "",
+                "Enter the 10-character TAN to check saved DDO details."
+            );
+            return;
+        }
+
+        if (tan.length !== 10) {
+            setTanStatus(
+                "",
+                "TAN must contain exactly 10 characters.",
+                "warning"
+            );
+            return;
+        }
+
+        if (!/^[A-Z0-9]{10}$/.test(tan)) {
+            setTanStatus(
+                "⚠",
+                "TAN may contain only letters and numbers.",
+                "warning"
+            );
+            return;
+        }
+
+        setTanStatus(
+            "⏳",
+            "Checking saved DDO details..."
+        );
+
+        try {
+            const response = await fetch(
+                `/api/employer/${encodeURIComponent(tan)}?user_id=${encodeURIComponent(USER_ID)}`,
+                {
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                populateEmployer(data);
+
+                setTanStatus(
+                    "✓",
+                    "Saved DDO details found and filled automatically.",
+                    "success"
+                );
+
+                await saveProgress(
+                    "ddo_details",
+                    65,
+                    false
+                );
+                return;
+            }
+
+            if (response.status === 404) {
+                setTanStatus(
+                    "＋",
+                    "TAN is not in the saved cache. Enter the DDO details manually.",
+                    "neutral"
+                );
+                return;
+            }
+
+            let detail = "TAN lookup failed.";
+
+            try {
+                const data = await response.json();
+                detail = data.detail || detail;
+            } catch (_) {
+                // Keep fallback message.
+            }
+
+            throw new Error(detail);
+
+        } catch (error) {
+            console.error("TAN lookup failed:", error);
+
+            setTanStatus(
+                "⚠",
+                "Could not check the TAN right now. You can still enter the DDO details manually.",
+                "warning"
+            );
+        }
+    }
+
+    async function saveProgress(
+        stepName = "ddo_form",
+        progressPercent = 65,
+        completed = false
+    ) {
+        if (!USER_ID) {
+            return false;
+        }
+
+        const draft = collectDraft();
+
+        try {
+            const response = await fetch("/api/progress", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: USER_ID,
+                    page_name: "ddo_details",
+                    step_name: stepName,
+                    last_completed_step:
+                        completed ? "ddo_details" : null,
+                    progress_percent: progressPercent,
+                    snapshot: {
+                        tan_id: draft.tan || null
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                let detail = "Progress could not be saved.";
+
+                try {
+                    const data = await response.json();
+                    detail = data.detail || detail;
+                } catch (_) {
+                    // Keep fallback.
+                }
+
+                throw new Error(detail);
+            }
+
+            return true;
+
+        } catch (error) {
+            console.warn("DDO progress save failed:", error);
+            return false;
+        }
+    }
+
+    function scheduleProgressSave() {
+        saveLocalDraft();
+
+        clearTimeout(progressTimer);
+        progressTimer = setTimeout(() => {
+            saveProgress("ddo_form", 65, false);
+        }, 700);
+    }
+
+    function validateForm() {
+        const draft = collectDraft();
+
+        if (!USER_ID) {
+            return "User ID is missing. Please start again from upload.";
+        }
+
+        if (!draft.tan) {
+            return "Please enter the DDO TAN Number.";
+        }
+
+        if (
+            draft.tan.length !== 10 ||
+            !/^[A-Z0-9]{10}$/.test(draft.tan)
+        ) {
+            return "Please enter a valid 10-character TAN.";
+        }
+
+        if (!draft.officer_name) {
+            return "Please enter the DDO Officer Name.";
+        }
+
+        if (!draft.employer_name) {
+            return "Please enter the Employer / DDO Center Name.";
+        }
+
+        if (!draft.designation) {
+            return "Please enter the DDO Designation.";
+        }
+
+        if (!draft.employer_address) {
+            return "Please enter the full Employer Address.";
+        }
+
+        if (
+            draft.pan &&
+            !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(draft.pan)
+        ) {
+            return "Employer PAN format is invalid.";
+        }
+
+        return "";
+    }
+
+    function setSubmitting(isSubmitting) {
+        const button = getField("payment_button");
+
+        button.disabled = isSubmitting;
+
+        if (isSubmitting) {
+            button.dataset.originalText =
+                button.textContent.trim();
+            button.textContent = "Saving...";
+            button.classList.add(
+                "opacity-60",
+                "cursor-not-allowed"
+            );
+        } else {
+            button.textContent =
+                button.dataset.originalText ||
+                "Proceed to Payment";
+            button.classList.remove(
+                "opacity-60",
+                "cursor-not-allowed"
+            );
+        }
+    }
+
+    async function proceedToPayment(event) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        hideMessage();
+
+        const validationError = validateForm();
+
+        if (validationError) {
+            showMessage(validationError, "error");
+            return;
+        }
+
+        setSubmitting(true);
+
+        const draft = collectDraft();
+
+        try {
+            if (!employeeRecord) {
+                employeeRecord = await loadEmployee();
+            }
+
+            if (!employeeRecord) {
+                throw new Error(
+                    "Employee details are unavailable. Please return to Review."
+                );
+            }
+
+            const employerResponse = await fetch(
+                "/api/employer",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: USER_ID,
+                        tan: draft.tan,
+                        officer_name: draft.officer_name,
+                        officer_father_name:
+                            draft.officer_father_name,
+                        employer_name: draft.employer_name,
+                        designation: draft.designation,
+                        employer_address:
+                            draft.employer_address,
+                        pan: draft.pan || null
+                    })
+                }
+            );
+
+            const employerResult =
+                await employerResponse.json();
+
+            if (!employerResponse.ok) {
+                throw new Error(
+                    employerResult.detail ||
+                    "DDO details could not be saved."
+                );
+            }
+
+            const linkResponse = await fetch(
+                "/api/employee",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: USER_ID,
+                        name: employeeRecord.name,
+                        pan: employeeRecord.pan,
+                        office_school_name:
+                            employeeRecord.office_school_name,
+                        tan_id: draft.tan,
+                        email: employeeRecord.email || null,
+                        mobile: employeeRecord.mobile || null
+                    })
+                }
+            );
+
+            const linkResult =
+                await linkResponse.json();
+
+            if (!linkResponse.ok) {
+                throw new Error(
+                    linkResult.detail ||
+                    "Employee could not be linked to the DDO."
+                );
+            }
+
+            await saveProgress(
+                "ddo_completed",
+                75,
+                true
+            );
+
+            try {
+                sessionStorage.removeItem(DDO_DRAFT_KEY);
+            } catch (_) {
+                // Local cleanup is best-effort only.
+            }
+
+            window.location.href =
+                `/payment?user_id=${encodeURIComponent(USER_ID)}`;
+
+        } catch (error) {
+            console.error(
+                "DDO/employee save failed:",
+                error
+            );
+
+            showMessage(
+                "Details could not be saved: " +
+                error.message,
+                "error"
+            );
+
+            setSubmitting(false);
+        }
+    }
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+            const tanInput = getField("tan_number");
+            const panInput = getField("employer_pan");
+            const backButton = getField("back_button");
+
+            if (!USER_ID) {
+                showMessage(
+                    "User ID is missing. Please return to the upload step.",
+                    "error"
+                );
+                getField("payment_button").disabled = true;
+                return;
+            }
+
+            restoreLocalDraft();
+            await loadEmployee();
+
+            await saveProgress(
+                "ddo_details",
+                60,
+                false
+            );
+
+            if (tanInput.value.trim().length === 10) {
+                await lookupTan(tanInput.value);
+            }
+
+            tanInput.addEventListener("input", () => {
+                tanInput.value = cleanUpper(
+                    tanInput.value
+                ).replace(/[^A-Z0-9]/g, "");
+
+                saveLocalDraft();
+
+                clearTimeout(tanLookupTimer);
+
+                if (tanInput.value.length === 10) {
+                    tanLookupTimer = setTimeout(
+                        () => lookupTan(tanInput.value),
+                        350
+                    );
+                } else {
+                    setTanStatus(
+                        "",
+                        "Enter the 10-character TAN to check saved DDO details."
+                    );
+                }
+
+                scheduleProgressSave();
+            });
+
+            tanInput.addEventListener("blur", () => {
+                if (tanInput.value.trim()) {
+                    lookupTan(tanInput.value);
+                }
+            });
+
+            panInput.addEventListener("input", () => {
+                panInput.value = cleanUpper(
+                    panInput.value
+                ).replace(/[^A-Z0-9]/g, "");
+            });
+
+            fieldIds
+                .filter(id => id !== "tan_number")
+                .forEach(id => {
+                    const element = getField(id);
+
+                    element.addEventListener(
+                        "input",
+                        scheduleProgressSave
+                    );
+                });
+
+            backButton.addEventListener("click", async () => {
+                saveLocalDraft();
+                await saveProgress(
+                    "ddo_form",
+                    65,
+                    false
+                );
+
+                window.location.href =
+                    `/review?user_id=${encodeURIComponent(USER_ID)}`;
+            });
+        }
+    );
+
+    window.addEventListener("pagehide", () => {
+        saveLocalDraft();
+
+        if (!USER_ID) {
+            return;
+        }
+
+        const draft = collectDraft();
+
+        const payload = JSON.stringify({
+            user_id: USER_ID,
+            page_name: "ddo_details",
+            step_name: "ddo_form",
+            last_completed_step: null,
+            progress_percent: 65,
+            snapshot: {
+                tan_id: draft.tan || null
+            }
+        });
+
+        if (navigator.sendBeacon) {
+            try {
+                navigator.sendBeacon(
+                    "/api/progress",
+                    new Blob(
+                        [payload],
+                        {
+                            type: "application/json"
+                        }
+                    )
+                );
+            } catch (_) {
+                // Normal autosave remains the fallback.
+            }
+        }
+    });
+</script>
+{% endblock %}

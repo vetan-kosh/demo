@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
+<h1 class="text-2xl font-bold text-slate-900">Terms & Service Disclaimer</h1>
+<p class="mt-4 text-slate-600 leading-7">Users are responsible for checking the accuracy of salary slips, PAN/TAN, employer details, tax deductions and the final generated document before relying on it.</p>
+<h2 class="text-lg font-bold mt-6">Document preparation</h2><p class="mt-2 text-slate-600 leading-7">The application prepares a Form 16 workflow from submitted records. Official TDS certificates and TRACES-origin records remain subject to the applicable deductor/TRACES process. The service must not be described as a government portal.</p>
+<h2 class="text-lg font-bold mt-6">Payments</h2><p class="mt-2 text-slate-600 leading-7">Manual UTR submissions require administrator verification. When online gateway payment is enabled, payment authentication is performed by the gateway; this application verifies the signed gateway result and does not request card CVV or UPI PIN.</p>
+<h2 class="text-lg font-bold mt-6">Availability</h2><p class="mt-2 text-slate-600 leading-7">Generation or email delivery can fail because of invalid source data, unavailable external services or configuration errors. Failed operations are recorded for administrator review.</p>
+<p class="mt-8 text-xs text-slate-400">Terms version: 1.0 · Last updated: 29 September 2026</p>
+</div>
+{% endblock %}
