@@ -1,0 +1,13 @@
+[Unit]
+Description=VetanKosh durable PDF/email worker
+After=network.target postgresql.service vetankosh-web.service
+[Service]
+User=vetankosh
+WorkingDirectory=/opt/vetankosh/backend
+EnvironmentFile=/opt/vetankosh/backend/.env
+ExecStart=/opt/vetankosh/venv/bin/python worker.py
+Restart=always
+RestartSec=5
+MemoryMax=1800M
+[Install]
+WantedBy=multi-user.target

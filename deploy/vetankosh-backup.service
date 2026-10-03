@@ -1,0 +1,8 @@
+[Unit]
+Description=VetanKosh off-VM OCI backup
+[Service]
+Type=oneshot
+User=vetankosh
+WorkingDirectory=/opt/vetankosh/backend
+EnvironmentFile=/opt/vetankosh/backend/.env
+ExecStart=/opt/vetankosh/venv/bin/python backup_to_oci.py
